@@ -3,50 +3,79 @@ const jwt = require("jsonwebtoken");
 
 const Admin = require("../models/admin");
 
-const registerUser = async (req, res) => {
+const registerUser = async (req, res, next) => {
   const { name, email, password } = req.body;
 
   try {
     // check if user exists
     const user = await Admin.findOne({ email: email });
-    if (!user) {
-      const hashedPass = await bcrypt.hash(password, 12);
 
-      const newUser = new Admin({
-        name: name,
-        email: email,
-        password: hashedPass,
-      });
-
-      await newUser.save();
-
-      res.status(201).json({ msg: "successfully registered!" });
-    } else {
-      res.status(401).json({ msg: "user already exists" });
+    if (user) {
+      const error = new Error("User already exists. Log in");
+      error.statusCode = 409;
+      throw error;
     }
+
+    const hashedPass = await bcrypt.hash(password, 12);
+
+    const newUser = new Admin({
+      name: name,
+      email: email,
+      password: hashedPass,
+    });
+
+    await newUser.save();
+
+    res.status(201).json({ msg: "successfully registered!" });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
   }
 };
 
-const login = async (req, res) => {
+const login = async (req, res, next) => {
   const { email, password } = req.body;
 
-  const user = {
-    email: email,
-    password: password,
-  };
+  let loadedUser;
 
-  const accessToken = generateAccessToken(user);
-  const refreshToken = jwt.sign(user, process.env.JWT_REFRESH_TOKEN);
-  res
-    .status(201)
-    .json({ accessToken: accessToken, refreshToken: refreshToken });
+  try {
+    const user = Admin.findOne({ email: email });
+    if (!user) {
+      const error = new Error("User not found");
+      error.statusCode = 404;
+      throw error;
+    }
+    console.log(user);
+
+    loadedUser = user;
+
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      const error = new Error("Wrong password!");
+      error.statusCode = 401;
+      throw error;
+    }
+
+    const token = jwt.sign(
+      {
+        email: loadedUser.email,
+        userId: loadedUser._id.toString(),
+      },
+      process.env.JWT_SECRET_TOKEN,
+      { expiresIn: "1h" }
+    );
+
+    res.status(200).json({
+      userId: loadedUser._id.toString(),
+      user: loadedUser,
+      token: token,
+    });
+  } catch (err) {
+    next(err);
+  }
 };
- 
-function generateAccessToken(user) {
-  return jwt.sign(user, process.env.JWT_ACCESS_TOKEN, { expiresIn: "15s" });
-}
 
 module.exports = {
   registerUser,
