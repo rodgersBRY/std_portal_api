@@ -5,7 +5,6 @@ const logger =require('morgan')
 
 require("dotenv").config();
 
-const authRoutes = require("./routes/auth.routes");
 const adminRoutes = require("./routes/admin.routes");
 const userRoutes = require("./routes/user.routes");
 
@@ -17,7 +16,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // api endpoints
-app.use("/auth", authRoutes);
 app.use("/admin", adminRoutes);
 app.use(userRoutes);
 

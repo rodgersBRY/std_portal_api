@@ -21,11 +21,11 @@ const adminSchema = new Schema(
   { timestamps: true }
 );
 
-adminSchema.methods.isPasswordValid = async (password) => {
-  const user = this;
-  const compare = await bcrypt.compare(password, user.password);
+// adminSchema.methods.isPasswordValid = async (password) => {
+//   const user = this;
+//   const compare = await bcrypt.compare(password, user.password);
 
-  return compare;
-};
+//   return compare;
+// };
 
 module.exports = mongoose.model("Admin", adminSchema);
