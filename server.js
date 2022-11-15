@@ -17,7 +17,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // api endpoints
 app.use("/admin", adminRoutes);
-app.use(userRoutes);
+app.use("/", userRoutes);
 
 // error handling middleware
 app.use((error, req, res, next) => {

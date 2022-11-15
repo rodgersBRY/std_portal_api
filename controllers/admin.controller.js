@@ -43,8 +43,9 @@ exports.login = async (req, res, next) => {
   let loadedUser;
 
   try {
-    const user = Admin.findOne({ email: email });
+    const user = await Admin.findOne({ email: email });
     if (!user) {
+      console.log('user not found');
       const error = new Error("User not found");
       error.statusCode = 404;
       throw error;
@@ -197,7 +198,7 @@ exports.deleteModule = async (req, res, next) => {
       error.statusCode = 404;
       throw error;
     }
-    
+
     await Module.remove();
     res.status(201).json({ msg: "deleted record " + id });
   } catch (err) {
