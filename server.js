@@ -1,21 +1,21 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const logger =require('morgan')
 
 require("dotenv").config();
 
-const authRoutes = require("./routes/auth.routes");
 const adminRoutes = require("./routes/admin.routes");
 const userRoutes = require("./routes/user.routes");
 
 const app = express();
 
+app.use(logger('dev'));
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // api endpoints
-app.use("/auth", authRoutes);
 app.use("/admin", adminRoutes);
 app.use(userRoutes);
 
@@ -30,7 +30,7 @@ app.use((error, req, res, next) => {
   });
 });
 
-const port = process.env.PORT || 4000;
+const port = process.env.PORT;
 
 // connect to mongoDB using mongoose
 mongoose
