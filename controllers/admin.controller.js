@@ -45,7 +45,7 @@ exports.login = async (req, res, next) => {
   try {
     const user = await Admin.findOne({ email: email });
     if (!user) {
-      console.log('user not found');
+      console.log("user not found");
       const error = new Error("User not found");
       error.statusCode = 404;
       throw error;
@@ -119,7 +119,7 @@ exports.getInstructors = async (req, res, next) => {
   }
 };
 
-exports.addStudent = async (req, res, next) => {
+exports.addUser = async (req, res, next) => {
   const {
     code,
     name,
@@ -142,11 +142,11 @@ exports.addStudent = async (req, res, next) => {
       throw error;
     }
 
-    const newStudent = new User({
+    const newUser = new User({
       code: code,
       name: name,
       email: email,
-      role: role,
+      role: role.toLowerCase(),
       modules: modules,
       phone: phone,
       age: age,
@@ -155,12 +155,32 @@ exports.addStudent = async (req, res, next) => {
       status: status,
     });
 
-    await newStudent.save();
-    res.status(201).json({ msg: "student created" });
+    await newUser.save();
+    res.status(201).json({ msg: "user created" });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
     }
+    next(err);
+  }
+};
+
+exports.deleteStudent = async (req, res, next) => {
+  const studentId = req.params.id;
+
+  try {
+    const student = await User.findById(studentId);
+
+    if (!student) {
+      const error = new Error("Student does not exist in the database!");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    await student.remove();
+
+    res.status(200).json({ msg: `student ${studentId} deleted from system` });
+  } catch (err) {
     next(err);
   }
 };

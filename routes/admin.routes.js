@@ -8,11 +8,13 @@ router.post("/login", adminController.login);
 
 router.post("/add-module", adminController.addModule);
 
-router.post("/new-student", adminController.addStudent);
+router.post("/new-user", adminController.addUser);
 
 router.get("/students", adminController.getStudents);
 
 router.get("/instructors", adminController.getInstructors);
+
+router.delete("/student/:id", adminController.deleteStudent);
 
 router.delete("/delete-module/:id", adminController.deleteModule);
 
