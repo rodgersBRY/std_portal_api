@@ -4,6 +4,10 @@ const Schema = require("mongoose").Schema;
 
 const userSchema = new Schema(
   {
+    code: {
+      type: String,
+      required: true,
+    },
     name: {
       type: String,
       required: true,

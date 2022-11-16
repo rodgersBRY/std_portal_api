@@ -121,6 +121,7 @@ exports.getInstructors = async (req, res, next) => {
 
 exports.addStudent = async (req, res, next) => {
   const {
+    code,
     name,
     email,
     role,
@@ -142,6 +143,7 @@ exports.addStudent = async (req, res, next) => {
     }
 
     const newStudent = new User({
+      code: code,
       name: name,
       email: email,
       role: role,
@@ -149,7 +151,7 @@ exports.addStudent = async (req, res, next) => {
       phone: phone,
       age: age,
       gender: gender,
-      fee_balance: fee_balance,
+      fee_balance: fee_balance ?? 0,
       status: status,
     });
 

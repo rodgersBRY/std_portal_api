@@ -1,16 +1,19 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const logger =require('morgan')
+const logger = require("morgan");
 
 require("dotenv").config();
 
 const adminRoutes = require("./routes/admin.routes");
 const userRoutes = require("./routes/user.routes");
 
+// const students = require("./students.json");
+// const User = require("./models/user");
+
 const app = express();
 
-app.use(logger('dev'));
+app.use(logger("dev"));
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -29,6 +32,29 @@ app.use((error, req, res, next) => {
     data: data,
   });
 });
+
+// app.get("/", async (_, res) => {
+//   for (stud of students) {
+//     const user = await User.findOne({ email: stud.email });
+//     if (user) {
+//       console.log("user already exists");
+//     } else {
+//       const newUser = new User({
+//         code: stud.code,
+//         name: stud.name,
+//         email: stud.email,
+//         role: stud.role,
+//         gender: stud.gender,
+//         phone: stud.phone,
+//         age: stud.age,
+//         status: stud.status,
+//       });
+
+//       await newUser.save();
+//     }
+//   }
+//   res.status(201).send({msg: 'successfully saved!'})
+// });
 
 const port = process.env.PORT;
 
