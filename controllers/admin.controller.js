@@ -1,9 +1,9 @@
-const Module = require("../models/module");
-const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const Admin = require("../models/admin");
+const Module = require("../models/module");
+const User = require("../models/user");
 
 exports.registerUser = async (req, res, next) => {
   const { name, email, password } = req.body;
@@ -186,9 +186,11 @@ exports.deleteStudent = async (req, res, next) => {
 };
 
 exports.addModule = async (req, res, next) => {
-  const { name, code, fee, topics } = req.body;
+  const { title, uniqueCode, fee, topics } = req.body;
+
   try {
-    const moduleExist = await Module.findOne({ name: name.toLowerCase() });
+    const moduleExist = await Module.findOne({ name: title.toLowerCase() });
+
     if (moduleExist) {
       const error = new Error("module already exists");
       error.statusCode = 409;
@@ -196,15 +198,15 @@ exports.addModule = async (req, res, next) => {
     }
 
     let newModule = new Module({
-      name: name.toLowerCase(),
-      shortCode: code,
+      name: title.toLowerCase(),
+      shortCode: uniqueCode,
       feeAmount: fee,
       topics: topics,
     });
 
-    await newModule.save();
+    const resp = await newModule.save();
 
-    res.status(201).json({ msg: "successfully saved" });
+    res.status(201).json({ data: resp });
   } catch (err) {
     next(err);
   }
@@ -226,8 +228,39 @@ exports.deleteModule = async (req, res, next) => {
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
-      err.message = "Server error";
     }
+    next(err);
+  }
+};
+
+exports.enrollStudent = async (req, res, next) => {
+  const userId = req.params.studentId;
+  const moduleId = req.params.moduleId;
+
+  try {
+    const user = await User.findById(userId);
+    let module = await Module.findById(moduleId);
+
+    const moduleExists = user.modules.some(
+      (mdl) => mdl.name === module.name
+    );
+
+    if (moduleExists) {
+      const error = new Error("Student already enrolled to module");
+      error.statusCode = 409;
+      throw error;
+    }
+
+    const updatedModuleList = [...user.modules];
+
+    updatedModuleList.push({ name: module.name });
+
+    user.modules = updatedModuleList;
+    user.fee_balance += module.feeAmount;
+
+    const resp = await user.save();
+    res.status(201).json({ data: resp });
+  } catch (err) {
     next(err);
   }
 };
