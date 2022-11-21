@@ -99,6 +99,24 @@ exports.getStudents = async (req, res, next) => {
   }
 };
 
+// exports.getUser = async (req, res, next) => {
+//   const userId = req.params.userId;
+
+//   try {
+//     const user = await User.findById(userId);
+
+//     if (!user) {
+//       const error = new Error("No user with that id");
+//       error.statusCode = 404;
+//       throw error;
+//     }
+
+//     res.status(200).json({ user });
+//   } catch (err) {
+//     next(err);
+//   }
+// };
+
 exports.getInstructors = async (req, res, next) => {
   try {
     const users = await User.find({ role: "instructor" });
@@ -241,9 +259,7 @@ exports.enrollStudent = async (req, res, next) => {
     const user = await User.findById(userId);
     let module = await Module.findById(moduleId);
 
-    const moduleExists = user.modules.some(
-      (mdl) => mdl.name === module.name
-    );
+    const moduleExists = user.modules.some((mdl) => mdl.name === module.name);
 
     if (moduleExists) {
       const error = new Error("Student already enrolled to module");

@@ -10,7 +10,10 @@ router.post("/add-module", adminController.addModule);
 
 router.post("/new-user", adminController.addUser);
 
-router.post('/enroll-student/:studentId/:moduleId', adminController.enrollStudent);
+router.post(
+  "/enroll-student/:studentId/:moduleId",
+  adminController.enrollStudent
+);
 
 router.get("/students", adminController.getStudents);
 
