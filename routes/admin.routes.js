@@ -15,6 +15,8 @@ router.post(
   adminController.enrollStudent
 );
 
+router.put("/update-fee", adminController.updateStudentFee);
+
 router.get("/students", adminController.getStudents);
 
 router.get("/instructors", adminController.getInstructors);

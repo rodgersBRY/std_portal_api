@@ -224,6 +224,27 @@ exports.deleteUser = async (req, res, next) => {
   }
 };
 
+exports.updateStudentFee = async (req, res, next) => {
+  const {amount, id} = req.body;
+
+  try {
+    const user = await User.findById(id);
+
+    if (!user) {
+      const error = new Error("User does not exist in the database!");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    user.fee_balance -= parseInt(amount);
+
+    const resp = await user.save();
+    res.status(201).json({ resp });
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.addModule = async (req, res, next) => {
   const { title, uniqueCode, fee, topics } = req.body;
 
