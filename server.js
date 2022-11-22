@@ -9,7 +9,9 @@ const adminRoutes = require("./routes/admin.routes");
 const userRoutes = require("./routes/user.routes");
 
 // const students = require("./students.json");
+// const instructors=require('./inst.json')
 // const User = require("./models/user");
+
 
 const app = express();
 
@@ -34,7 +36,7 @@ app.use((error, req, res, next) => {
 });
 
 // app.get("/", async (_, res) => {
-//   for (stud of students) {
+//   for (stud of instructors) {
 //     const user = await User.findOne({ email: stud.email });
 //     if (user) {
 //       console.log("user already exists");
@@ -47,7 +49,6 @@ app.use((error, req, res, next) => {
 //         gender: stud.gender,
 //         phone: stud.phone,
 //         age: stud.age,
-//         status: stud.status,
 //       });
 
 //       await newUser.save();

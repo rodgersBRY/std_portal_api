@@ -38,7 +38,6 @@ const userSchema = new Schema(
     },
     fee_balance: {
       type: Number,
-      required: true,
     },
     modules: [{ name: String }],
   },
