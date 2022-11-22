@@ -33,14 +33,12 @@ const userSchema = new Schema(
       required: true,
     },
     status: {
-      type: String,
-      required: true,
-      default: "active",
+      type: Boolean,
+      default: true,
     },
     fee_balance: {
       type: Number,
       required: true,
-      default: 0,
     },
     modules: [{ name: String }],
   },

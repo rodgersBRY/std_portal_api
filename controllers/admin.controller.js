@@ -138,18 +138,7 @@ exports.getInstructors = async (req, res, next) => {
 };
 
 exports.addUser = async (req, res, next) => {
-  const {
-    code,
-    name,
-    email,
-    role,
-    modules,
-    phone,
-    age,
-    gender,
-    fee_balance,
-    status,
-  } = req.body;
+  const { code, name, email, role, modules, phone, age, gender } = req.body;
 
   try {
     const userExists = await User.findOne({ email: email });
@@ -160,17 +149,34 @@ exports.addUser = async (req, res, next) => {
       throw error;
     }
 
+    let amount = 0;
+    let moduleList = [];
+
+    for (var mdl of modules) {
+      const module = await Module.findOne({ name: mdl });
+
+      if (!module) {
+        const error = new Error("Module does not exist");
+        error.statusCode = 404;
+        throw error;
+      }
+      moduleList.push({
+        name: mdl,
+      });
+
+      amount += module.feeAmount;
+    }
+
     const newUser = new User({
       code: code,
       name: name,
       email: email,
-      role: role.toLowerCase(),
-      modules: modules,
+      role: role,
+      modules: moduleList,
       phone: phone,
-      age: age,
+      age: parseInt(age),
       gender: gender,
-      fee_balance: fee_balance ?? 0,
-      status: status,
+      fee_balance: amount,
     });
 
     await newUser.save();
