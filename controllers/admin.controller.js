@@ -204,21 +204,21 @@ exports.addUser = async (req, res, next) => {
   }
 };
 
-exports.deleteStudent = async (req, res, next) => {
-  const studentId = req.params.id;
+exports.deleteUser = async (req, res, next) => {
+  const userId = req.params.id;
 
   try {
-    const student = await User.findById(studentId);
+    const user = await User.findById(userId);
 
-    if (!student) {
-      const error = new Error("Student does not exist in the database!");
+    if (!user) {
+      const error = new Error("User does not exist in the database!");
       error.statusCode = 404;
       throw error;
     }
 
-    await student.remove();
+    await user.remove();
 
-    res.status(200).json({ msg: `student ${studentId} deleted from system` });
+    res.status(200).json({ msg: `student ${userId} deleted from system` });
   } catch (err) {
     next(err);
   }

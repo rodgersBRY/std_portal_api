@@ -19,7 +19,7 @@ router.get("/students", adminController.getStudents);
 
 router.get("/instructors", adminController.getInstructors);
 
-router.delete("/student/:id", adminController.deleteStudent);
+router.delete("/user/:id", adminController.deleteUser);
 
 router.delete("/delete-module/:id", adminController.deleteModule);
 
