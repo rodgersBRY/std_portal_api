@@ -7,19 +7,16 @@ router.post("/register", adminController.registerUser);
 
 router.post("/login", adminController.login);
 
-router.post("/add-module", authGuardMiddleware, adminController.addModule);
+router.post("/add-module", adminController.addModule);
 
-router.post("/new-user", authGuardMiddleware, adminController.addUser);
+router.post("/new-user", adminController.addUser);
 
 router.post(
   "/enroll-student/:studentId/:moduleId",
   adminController.enrollStudent
 );
 
-router.put(
-  "/update-fee",
-  adminController.updateStudentFee
-);
+router.put("/update-fee", adminController.updateStudentFee);
 
 router.get("/students", adminController.getStudents);
 
