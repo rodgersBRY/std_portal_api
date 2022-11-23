@@ -39,7 +39,7 @@ app.use((error, req, res, next) => {
 //   for (stud of instructors) {
 //     const user = await User.findOne({ email: stud.email });
 //     if (user) {
-//       console.log("user already exists");
+//       console.log("user already exists in the system");
 //     } else {
 //       const newUser = new User({
 //         code: stud.code,
