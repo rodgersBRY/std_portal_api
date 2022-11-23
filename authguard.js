@@ -1,17 +1,32 @@
-const jwt=require('jsonwebtoken')
+const jwt = require("jsonwebtoken");
 
 require("dotenv").config();
 
-const authenticateToken = (req, res, next) => {
+module.exports = (req, res, next) => {
   const authHeader = req.headers["authorization"];
+  if (!authHeader) {
+    const error = new Error("Unauthorized!");
+    error.statusCode = 401;
+    throw error;
+  }
+
   const token = authHeader.split(" ")[1];
-  if (!token) return res.status(401).json({ error: "Unauthorized!" });
+  console.log(token);
 
-  jwt.verify(token, process.env.JWT_ACCESS_TOKEN, (err, user) => {
-    if (err) return res.status(403).json({ error: "token expired" });
-    req.user = user;
-    next();
-  });
+  let decodedToken;
+
+  try {
+    decodedToken = jwt.verify(token, process.env.JWT_SECRET_TOKEN);
+  } catch (err) {
+    next(err);
+  }
+
+  if (!decodedToken) {
+    const error = new Error("Unauthorized!");
+    error.statusCode = 401;
+    throw error;
+  }
+
+  req.userId = decodedToken.userId;
+  next()
 };
-
-module.exports = authenticateToken

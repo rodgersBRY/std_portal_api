@@ -5,11 +5,12 @@ const Admin = require("../models/admin");
 const Module = require("../models/module");
 const User = require("../models/user");
 
+require("dotenv").config();
+
 exports.registerUser = async (req, res, next) => {
   const { name, email, password } = req.body;
 
   try {
-    // check if user exists
     const user = await Admin.findOne({ email: email });
 
     if (user) {
@@ -45,7 +46,6 @@ exports.login = async (req, res, next) => {
   try {
     const user = await Admin.findOne({ email: email });
     if (!user) {
-      console.log("user not found");
       const error = new Error("User not found");
       error.statusCode = 404;
       throw error;
@@ -98,24 +98,6 @@ exports.getStudents = async (req, res, next) => {
     next(err);
   }
 };
-
-// exports.getUser = async (req, res, next) => {
-//   const userId = req.params.userId;
-
-//   try {
-//     const user = await User.findById(userId);
-
-//     if (!user) {
-//       const error = new Error("No user with that id");
-//       error.statusCode = 404;
-//       throw error;
-//     }
-
-//     res.status(200).json({ user });
-//   } catch (err) {
-//     next(err);
-//   }
-// };
 
 exports.getInstructors = async (req, res, next) => {
   try {
@@ -225,7 +207,7 @@ exports.deleteUser = async (req, res, next) => {
 };
 
 exports.updateStudentFee = async (req, res, next) => {
-  const {amount, id} = req.body;
+  const { amount, id } = req.body;
 
   try {
     const user = await User.findById(id);
