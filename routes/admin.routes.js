@@ -18,7 +18,6 @@ router.post(
 
 router.put(
   "/update-fee",
-  authGuardMiddleware,
   adminController.updateStudentFee
 );
 
