@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "description": "api for the student portal for Jowam Training Centre",
   "main": "server.js",
+  "engines": {
+    "node": "14.x"
+  },
   "scripts": {
+    "start": "node server.js",
     "start:dev": "nodemon server.js"
   },
   "repository": {
