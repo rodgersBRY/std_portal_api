@@ -13,7 +13,6 @@ router.post("/new-user", authGuardMiddleware, adminController.addUser);
 
 router.post(
   "/enroll-student/:studentId/:moduleId",
-  authGuardMiddleware,
   adminController.enrollStudent
 );
 
@@ -23,16 +22,12 @@ router.put(
   adminController.updateStudentFee
 );
 
-router.get("/students", authGuardMiddleware, adminController.getStudents);
+router.get("/students", adminController.getStudents);
 
-router.get("/instructors", authGuardMiddleware, adminController.getInstructors);
+router.get("/instructors", adminController.getInstructors);
 
-router.delete("/user/:id", authGuardMiddleware, adminController.deleteUser);
+router.delete("/user/:id", adminController.deleteUser);
 
-router.delete(
-  "/delete-module/:id",
-  authGuardMiddleware,
-  adminController.deleteModule
-);
+router.delete("/delete-module/:id", adminController.deleteModule);
 
 module.exports = router;
