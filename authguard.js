@@ -11,22 +11,21 @@ module.exports = (req, res, next) => {
   }
 
   const token = authHeader.split(" ")[1];
-  console.log(token);
 
   let decodedToken;
 
   try {
     decodedToken = jwt.verify(token, process.env.JWT_SECRET_TOKEN);
+
+    if (!decodedToken) {
+      const error = new Error("Unauthorized!");
+      error.statusCode = 401;
+      throw error;
+    }
+
+    req.userId = decodedToken.userId;
+    next();
   } catch (err) {
     next(err);
   }
-
-  if (!decodedToken) {
-    const error = new Error("Unauthorized!");
-    error.statusCode = 401;
-    throw error;
-  }
-
-  req.userId = decodedToken.userId;
-  next()
 };
