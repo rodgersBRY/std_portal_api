@@ -137,44 +137,33 @@ exports.addUser = async (req, res, next) => {
     let newUser;
 
     // separate between instructors and students
-    if (role === "student") {
-      for (var mdl of modules) {
-        const module = await Module.findOne({ name: mdl });
+    for (var mdl of modules) {
+      const module = await Module.findOne({ name: mdl });
 
-        if (!module) {
-          const error = new Error("Module does not exist");
-          error.statusCode = 404;
-          throw error;
-        }
-        moduleList.push({
-          name: mdl,
-        });
-
-        amount += module.feeAmount;
+      if (!module) {
+        const error = new Error("Module does not exist");
+        error.statusCode = 404;
+        throw error;
       }
 
-      newUser = new User({
-        code: code,
-        name: name,
-        email: email,
-        role: role,
-        phone: phone,
-        age: parseInt(age),
-        gender: gender,
-        modules: moduleList,
-        fee_balance: amount,
+      moduleList.push({
+        name: mdl,
       });
-    } else {
-      newUser = new User({
-        code: code,
-        name: name,
-        email: email,
-        role: role,
-        phone: phone,
-        age: parseInt(age),
-        gender: gender,
-      });
+
+      amount += module.feeAmount;
     }
+    // student has a fee balance field
+    newUser = new User({
+      code: code,
+      name: name,
+      email: email,
+      role: role,
+      phone: phone,
+      age: parseInt(age),
+      gender: gender,
+      modules: moduleList,
+      fee_balance: amount,
+    });
 
     await newUser.save();
     res.status(201).json({ msg: "user created" });

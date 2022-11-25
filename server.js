@@ -12,7 +12,6 @@ const userRoutes = require("./routes/user.routes");
 // const instructors=require('./inst.json')
 // const User = require("./models/user");
 
-
 const app = express();
 
 app.use(logger("dev"));

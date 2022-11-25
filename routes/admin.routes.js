@@ -7,7 +7,7 @@ router.post("/register", adminController.registerUser);
 
 router.post("/login", adminController.login);
 
-router.post("/add-module", adminController.addModule);
+router.post("/add-module", authGuardMiddleware, adminController.addModule);
 
 router.post("/new-user", adminController.addUser);
 
@@ -22,7 +22,7 @@ router.get("/students", adminController.getStudents);
 
 router.get("/instructors", adminController.getInstructors);
 
-router.delete("/user/:id", adminController.deleteUser);
+router.delete("/user/:id", authGuardMiddleware, adminController.deleteUser);
 
 router.delete("/delete-module/:id", adminController.deleteModule);
 

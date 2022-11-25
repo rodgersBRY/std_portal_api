@@ -4,6 +4,7 @@ require("dotenv").config();
 
 module.exports = (req, res, next) => {
   const authHeader = req.headers["authorization"];
+
   if (!authHeader) {
     const error = new Error("Unauthorized!");
     error.statusCode = 401;
@@ -16,16 +17,16 @@ module.exports = (req, res, next) => {
 
   try {
     decodedToken = jwt.verify(token, process.env.JWT_SECRET_TOKEN);
-
-    if (!decodedToken) {
-      const error = new Error("Unauthorized!");
-      error.statusCode = 401;
-      throw error;
-    }
-
-    req.userId = decodedToken.userId;
-    next();
   } catch (err) {
     next(err);
   }
+
+  if (!decodedToken) {
+    const error = new Error("Unauthorized!");
+    error.statusCode = 401;
+    throw error;
+  }
+
+  req.userId = decodedToken.userId;
+  next();
 };
