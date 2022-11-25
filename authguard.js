@@ -3,30 +3,38 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 module.exports = (req, res, next) => {
-  const authHeader = req.headers["authorization"];
-
-  if (!authHeader) {
-    const error = new Error("Unauthorized!");
+  if (!req.session.user) {
+    const error = new Error("Unauthorized User");
     error.statusCode = 401;
     throw error;
   }
 
-  const token = authHeader.split(" ")[1];
+  // const authHeader = req.headers["authorization"];
 
-  let decodedToken;
+  // if (!authHeader) {
+  //   const error = new Error("Unauthorized User");
+  //   error.statusCode = 401;
+  //   throw error;
+  // }
 
-  try {
-    decodedToken = jwt.verify(token, process.env.JWT_SECRET_TOKEN);
-  } catch (err) {
-    next(err);
-  }
+  // const token = authHeader.split(" ")[1];
 
-  if (!decodedToken) {
-    const error = new Error("Unauthorized!");
-    error.statusCode = 401;
-    throw error;
-  }
+  // let decodedToken;
 
-  req.userId = decodedToken.userId;
+  // try {
+  //   decodedToken = jwt.verify(token, process.env.JWT_SECRET_TOKEN);
+  // } catch (err) {
+  //   next(err);
+  // }
+
+  // console.log(decodedToken);
+
+  // if (!decodedToken) {
+  //   const error = new Error("Unverified Token!");
+  //   error.statusCode = 401;
+  //   throw error;
+  // }
+
+  // req.userId = decodedToken.userId;
   next();
 };

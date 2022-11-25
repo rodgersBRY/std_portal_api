@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const logger = require("morgan");
+const session = require("express-session");
 
 require("dotenv").config();
 
@@ -13,6 +14,15 @@ const userRoutes = require("./routes/user.routes");
 // const User = require("./models/user");
 
 const app = express();
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET_TOKEN,
+    resave: true,
+    saveUninitialized: true,
+    cookie: { maxAge: 1000 * 60 * 60 * 1 },
+  })
+);
 
 app.use(logger("dev"));
 app.use(cors());
