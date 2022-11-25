@@ -1,5 +1,4 @@
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 
 const Admin = require("../models/admin");
 const Module = require("../models/module");
@@ -62,21 +61,9 @@ exports.login = async (req, res, next) => {
 
     req.session.user = loadedUser;
 
-    console.log(req.session);
-
-    // const token = jwt.sign(
-    //   {
-    //     email: loadedUser.email,
-    //     userId: loadedUser._id.toString(),
-    //   },
-    //   process.env.JWT_SECRET_TOKEN,
-    //   { expiresIn: "1h" }
-    // );
-
     res.status(200).json({
       userId: loadedUser._id.toString(),
       user: loadedUser,
-      // token: token,
     });
   } catch (err) {
     next(err);
@@ -130,7 +117,7 @@ exports.addUser = async (req, res, next) => {
     const userExists = await User.findOne({ email: email });
 
     if (userExists) {
-      const error = new Error("Email already exists");
+      const error = new Error("User already exists");
       error.statusCode = 409;
       throw error;
     }

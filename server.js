@@ -3,17 +3,37 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const logger = require("morgan");
 const session = require("express-session");
+const MongoDBStore = require("connect-mongodb-session")(session);
 
 require("dotenv").config();
 
 const adminRoutes = require("./routes/admin.routes");
 const userRoutes = require("./routes/user.routes");
 
-// const students = require("./students.json");
-// const instructors=require('./inst.json')
-// const User = require("./models/user");
-
 const app = express();
+
+// session store
+var store = new MongoDBStore({
+  uri: process.env.MONGO_URI,
+  collection: "mySessions",
+});
+
+store.on("error", (err) => {
+  console.log(err);
+});
+
+// connect to mongoDB using mongoose
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+}).then(() => {
+  app.listen(process.env.PORT, () => {
+    console.log('app running on port 4000');
+  });
+});
+
+mongoose.Promise = global.Promise;
+const db = mongoose.connection;
 
 app.use(
   session({
@@ -21,6 +41,7 @@ app.use(
     resave: true,
     saveUninitialized: true,
     cookie: { maxAge: 1000 * 60 * 60 * 1 },
+    store: store,
   })
 );
 
@@ -67,18 +88,3 @@ app.use((error, req, res, next) => {
 // });
 
 const port = process.env.PORT;
-
-// connect to mongoDB using mongoose
-mongoose
-  .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
-    app.listen(port, () => {
-      console.log("app running on port " + port);
-    });
-  })
-  .catch((err) => {
-    console.error(err);
-  });
