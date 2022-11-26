@@ -59,7 +59,7 @@ exports.login = async (req, res, next) => {
       throw error;
     }
 
-    req.session.user = loadedUser;
+    req.session.isAuth = true;
 
     res.status(200).json({
       userId: loadedUser._id.toString(),
@@ -70,7 +70,19 @@ exports.login = async (req, res, next) => {
   }
 };
 
+exports.logout = (req, res) => {
+  req.session.destroy((err) => {
+    if (err) throw err;
+
+    res.status(200).json({
+      msg: "logged out!",
+    });
+  });
+};
+
 exports.getStudents = async (req, res, next) => {
+  console.log(req.session);
+
   try {
     const users = await User.find({ role: "student" });
 

@@ -18,29 +18,21 @@ var store = new MongoDBStore({
   collection: "mySessions",
 });
 
-store.on("error", (err) => {
-  console.log(err);
-});
-
 // connect to mongoDB using mongoose
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-}).then(() => {
-  app.listen(process.env.PORT, () => {
-    console.log('app running on port 4000');
+mongoose
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log("mongoDB connected");
   });
-});
-
-mongoose.Promise = global.Promise;
-const db = mongoose.connection;
 
 app.use(
   session({
     secret: process.env.SESSION_SECRET_TOKEN,
-    resave: true,
-    saveUninitialized: true,
-    cookie: { maxAge: 1000 * 60 * 60 * 1 },
+    resave: false,
+    saveUninitialized: false,
     store: store,
   })
 );
@@ -65,26 +57,13 @@ app.use((error, req, res, next) => {
   });
 });
 
-// app.get("/", async (_, res) => {
-//   for (stud of instructors) {
-//     const user = await User.findOne({ email: stud.email });
-//     if (user) {
-//       console.log("user already exists in the system");
-//     } else {
-//       const newUser = new User({
-//         code: stud.code,
-//         name: stud.name,
-//         email: stud.email,
-//         role: stud.role,
-//         gender: stud.gender,
-//         phone: stud.phone,
-//         age: stud.age,
-//       });
+app.get("/", (req, res) => {
+  req.session.isAUth = true;
+  console.log(req.session);
 
-//       await newUser.save();
-//     }
-//   }
-//   res.status(201).send({msg: 'successfully saved!'})
-// });
+  res.status(200).send("hello there");
+});
 
-const port = process.env.PORT;
+app.listen(process.env.PORT, () => {
+  console.log("app running on port 4000");
+});
