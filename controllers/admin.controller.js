@@ -81,8 +81,6 @@ exports.logout = (req, res) => {
 };
 
 exports.getStudents = async (req, res, next) => {
-  console.log(req.session);
-
   try {
     const users = await User.find({ role: "student" });
 
@@ -301,8 +299,6 @@ exports.enrollStudent = async (req, res, next) => {
 exports.getStudentsPerModule = async (req, res, next) => {
   const moduleTitle = req.params.moduleTitle;
 
-  console.log(moduleTitle);
-
   let studentList = [];
 
   try {
@@ -316,7 +312,7 @@ exports.getStudentsPerModule = async (req, res, next) => {
         }
       }
     }
-    
+
     res.status(200).json({ studentList });
   } catch (err) {
     next(err);
