@@ -155,6 +155,7 @@ exports.addUser = async (req, res, next) => {
 
       amount += module.feeAmount;
     }
+
     // student has a fee balance field
     newUser = new User({
       code: code,
@@ -240,7 +241,7 @@ exports.addModule = async (req, res, next) => {
 
     const resp = await newModule.save();
 
-    res.status(201).json({ data: resp });
+    res.status(201).json({ resp });
   } catch (err) {
     next(err);
   }
@@ -257,7 +258,7 @@ exports.deleteModule = async (req, res, next) => {
       throw error;
     }
 
-    await Module.remove();
+    await module.remove();
     res.status(201).json({ msg: "deleted record " + id });
   } catch (err) {
     if (!err.statusCode) {
@@ -292,6 +293,31 @@ exports.enrollStudent = async (req, res, next) => {
 
     const resp = await user.save();
     res.status(201).json({ data: resp });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.getStudentsPerModule = async (req, res, next) => {
+  const moduleTitle = req.params.moduleTitle;
+
+  console.log(moduleTitle);
+
+  let studentList = [];
+
+  try {
+    const users = await User.find({ role: "student" });
+
+    // filter students to a course
+    for (var user of users) {
+      for (var mdl of user.modules) {
+        if (mdl.name === moduleTitle) {
+          studentList.push(user);
+        }
+      }
+    }
+    
+    res.status(200).json({ studentList });
   } catch (err) {
     next(err);
   }

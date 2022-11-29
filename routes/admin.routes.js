@@ -7,7 +7,7 @@ router.post("/register", adminController.registerUser);
 
 router.post("/login", adminController.login);
 
-router.post("/add-module", isAuth, adminController.addModule);
+router.post("/add-module", adminController.addModule);
 
 router.post("/new-user", adminController.addUser);
 
@@ -21,6 +21,11 @@ router.post("/logout", adminController.logout);
 router.put("/update-fee", adminController.updateStudentFee);
 
 router.get("/students", adminController.getStudents);
+
+router.get(
+  "/module-student/:moduleTitle",
+  adminController.getStudentsPerModule
+);
 
 router.get("/instructors", adminController.getInstructors);
 
