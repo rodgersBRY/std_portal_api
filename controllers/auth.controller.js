@@ -40,7 +40,7 @@ exports.login = async (req, res, next) => {
   let loadedUser;
 
   try {
-    const user = await Admin.findOne({ email });
+    const user = await Admin.findOne({ email: email });
     if (!user) {
       const error = new Error("User not found");
       error.statusCode = 404;
