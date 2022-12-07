@@ -6,79 +6,6 @@ const User = require("../models/user");
 
 require("dotenv").config();
 
-exports.registerUser = async (req, res, next) => {
-  const { name, email, password } = req.body;
-
-  try {
-    const user = await Admin.findOne({ email: email });
-
-    if (user) {
-      const error = new Error("User already exists. Log in");
-      error.statusCode = 409;
-      throw error;
-    }
-
-    const hashedPass = await bcrypt.hash(password, 12);
-
-    const newUser = new Admin({
-      name: name,
-      email: email,
-      password: hashedPass,
-    });
-
-    await newUser.save();
-
-    res.status(201).json({ msg: "successfully registered!" });
-  } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
-    next(err);
-  }
-};
-
-exports.login = async (req, res, next) => {
-  const { email, password } = req.body;
-
-  let loadedUser;
-
-  try {
-    const user = await Admin.findOne({ email: email });
-    if (!user) {
-      const error = new Error("User not found");
-      error.statusCode = 404;
-      throw error;
-    }
-
-    loadedUser = user;
-
-    const passwordMatch = await bcrypt.compare(password, user.password);
-    if (!passwordMatch) {
-      const error = new Error("Wrong password!");
-      error.statusCode = 401;
-      throw error;
-    }
-
-    req.session.isAuth = true;
-
-    res.status(200).json({
-      userId: loadedUser._id.toString(),
-      user: loadedUser,
-    });
-  } catch (err) {
-    next(err);
-  }
-};
-
-exports.logout = (req, res) => {
-  req.session.destroy((err) => {
-    if (err) throw err;
-
-    res.status(200).json({
-      msg: "logged out!",
-    });
-  });
-};
 
 exports.getStudents = async (req, res, next) => {
   try {
@@ -111,6 +38,23 @@ exports.getInstructors = async (req, res, next) => {
     }
 
     res.status(200).json({ data: users });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+      err.message = "Server error";
+    }
+    next(err);
+  }
+};
+
+exports.getModules = async (req, res, next) => {
+  try {
+    const modules = await Module.find();
+    if (modules.length > 0) {
+      res.status(200).json({ data: modules });
+    } else {
+      res.status(200).json({ msg: "no modules created" });
+    }
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;

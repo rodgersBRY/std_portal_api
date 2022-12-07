@@ -2,21 +2,13 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const logger = require("morgan");
-const session = require("express-session");
-const MongoDBStore = require("connect-mongodb-session")(session);
 
 require("dotenv").config();
 
 const adminRoutes = require("./routes/admin.routes");
-const userRoutes = require("./routes/user.routes");
+const authRoutes = require("./routes/auth.routes");
 
 const app = express();
-
-// session store
-var store = new MongoDBStore({
-  uri: process.env.MONGO_URI,
-  collection: "mySessions",
-});
 
 // connect to mongoDB using mongoose
 mongoose
@@ -28,23 +20,14 @@ mongoose
     console.log("mongoDB connected");
   });
 
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET_TOKEN,
-    resave: false,
-    saveUninitialized: false,
-    store: store,
-  })
-);
-
 app.use(logger("dev"));
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // api endpoints
-app.use("/admin", adminRoutes);
-app.use("/", userRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
 
 // error handling middleware
 app.use((error, req, res, next) => {
