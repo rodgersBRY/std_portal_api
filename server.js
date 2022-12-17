@@ -40,13 +40,6 @@ app.use((error, req, res, next) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 
-app.get("/", (req, res) => {
-  req.session.isAUth = true;
-  console.log(req.session);
-
-  res.status(200).send("hello there");
-});
-
 app.listen(process.env.PORT, () => {
   console.log("app running on port 4000");
 });
