@@ -25,6 +25,10 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// api endpoints
+app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
+
 // error handling middleware
 app.use((error, req, res, next) => {
   const status = error.statusCode || 500;
@@ -34,17 +38,6 @@ app.use((error, req, res, next) => {
     message,
     data,
   });
-});
-
-// api endpoints
-app.use("/api/auth", authRoutes);
-app.use("/api/admin", adminRoutes);
-
-app.get("/", (req, res) => {
-  req.session.isAUth = true;
-  console.log(req.session);
-
-  res.status(200).send("hello there");
 });
 
 app.listen(process.env.PORT, () => {

@@ -10,6 +10,7 @@ exports.register = async (req, res, next) => {
     const user = await Admin.findOne({ email: email });
 
     if (user) {
+      console.log('user already exists');
       const error = new Error("User already exists. Log in");
       error.statusCode = 409;
       throw error;
@@ -24,12 +25,8 @@ exports.register = async (req, res, next) => {
     });
 
     await newUser.save();
-
     res.status(201).json({ msg: "successfully registered!" });
   } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
     next(err);
   }
 };
@@ -49,7 +46,7 @@ exports.login = async (req, res, next) => {
 
     loadedUser = user;
 
-    const passwordMatch = await bcrypt.compare(password, user.password);
+    const passwordMatch = await bcrypt.compare(password, loadedUser.password);
     if (!passwordMatch) {
       const error = new Error("Wrong password!");
       error.statusCode = 401;
