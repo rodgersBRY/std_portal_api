@@ -40,13 +40,6 @@ app.use((error, req, res, next) => {
   });
 });
 
-<<<<<<< HEAD
-=======
-// api endpoints
-app.use("/api/auth", authRoutes);
-app.use("/api/admin", adminRoutes);
-
->>>>>>> 3caa7577a082d8aa221483cc36d6e7bc8b5cf102
 app.listen(process.env.PORT, () => {
   console.log("app running on port 4000");
 });
