@@ -1,6 +1,0 @@
-{
-  "version": 2,
-  "name": "std-portal-api",
-  "builds": [{ "src": "server.js", "use": "@vercel/node" }],
-  "routes": [{ "src": "/(.*)", "dest": "/server.js" }]
-}
