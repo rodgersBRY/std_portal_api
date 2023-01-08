@@ -25,6 +25,10 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// api endpoints
+app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
+
 // error handling middleware
 app.use((error, req, res, next) => {
   const status = error.statusCode || 500;
@@ -36,9 +40,6 @@ app.use((error, req, res, next) => {
   });
 });
 
-// api endpoints
-app.use("/api/auth", authRoutes);
-app.use("/api/admin", adminRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log("app running on port 4000");
