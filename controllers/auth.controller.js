@@ -59,7 +59,7 @@ exports.login = async (req, res, next) => {
         userId: loadedUser._id.toString(),
       },
       process.env.JWT_SECRET_TOKEN,
-      { expiresIn: "1m" }
+      { expiresIn: "1h" }
     );
 
     res.status(200).json({
