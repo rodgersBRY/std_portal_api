@@ -6,7 +6,6 @@ const User = require("../models/user");
 
 require("dotenv").config();
 
-
 exports.getStudents = async (req, res, next) => {
   try {
     const users = await User.find({ role: "student" });
@@ -64,8 +63,15 @@ exports.getModules = async (req, res, next) => {
   }
 };
 
+const generateRandomNo = () => {
+  var low = Math.ceil(1);
+  var high = Math.floor(1000);
+  var randomFloat = low + Math.random() * (high - low);
+  return Math.ceil(randomFloat);
+};
+
 exports.addUser = async (req, res, next) => {
-  const { code, name, email, role, modules, phone, age, gender } = req.body;
+  const { name, email, role, modules, phone, age, gender } = req.body;
 
   try {
     const userExists = await User.findOne({ email: email });
@@ -93,6 +99,7 @@ exports.addUser = async (req, res, next) => {
 
       moduleList.push({
         name: mdl,
+        amount: module.feeAmount,
       });
 
       amount += module.feeAmount;
@@ -100,7 +107,7 @@ exports.addUser = async (req, res, next) => {
 
     // student has a fee balance field
     newUser = new User({
-      code: code,
+      code: "JW-" + generateRandomNo(),
       name: name,
       email: email,
       role: role,
@@ -176,7 +183,7 @@ exports.addModule = async (req, res, next) => {
 
     let newModule = new Module({
       name: title.toLowerCase(),
-      shortCode: uniqueCode,
+      shortCode: "JC-" + generateRandomNo(),
       feeAmount: fee,
       topics: topics,
     });
