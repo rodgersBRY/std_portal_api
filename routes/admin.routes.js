@@ -21,7 +21,7 @@ router.post("/add-module", isAuth, adminController.addModule);
 router.post("/new-user", isAuth, adminController.addUser);
 
 router.post(
-  "/enroll-student/:studentId/:moduleId",
+  "/enroll-student/:studentId/",
   isAuth,
   adminController.enrollStudent
 );

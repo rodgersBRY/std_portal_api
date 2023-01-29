@@ -160,7 +160,11 @@ exports.updateStudentFee = async (req, res, next) => {
       throw error;
     }
 
-    user.fee_balance -= parseInt(amount);
+    if (user.fee_balance <= 0) {
+      user.fee_balance = 0;
+    } else {
+      user.fee_balance -= parseInt(amount);
+    }
 
     const resp = await user.save();
     res.status(201).json({ resp });
@@ -219,11 +223,14 @@ exports.deleteModule = async (req, res, next) => {
 
 exports.enrollStudent = async (req, res, next) => {
   const userId = req.params.studentId;
-  const moduleId = req.params.moduleId;
+
+  const moduleName = req.body.moduleName;
+
+  console.log(userId, req.body);
 
   try {
     const user = await User.findById(userId);
-    let module = await Module.findById(moduleId);
+    const module = await Module.findOne({ name: moduleName });
 
     const moduleExists = user.modules.some((mdl) => mdl.name === module.name);
 
@@ -240,8 +247,8 @@ exports.enrollStudent = async (req, res, next) => {
     user.modules = updatedModuleList;
     user.fee_balance += module.feeAmount;
 
-    const resp = await user.save();
-    res.status(201).json({ data: resp });
+    const updatedUser = await user.save();
+    res.status(201).json({ updatedUser });
   } catch (err) {
     next(err);
   }
