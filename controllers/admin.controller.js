@@ -1,27 +1,29 @@
-const bcrypt = require("bcrypt");
-
-const Admin = require("../models/admin");
 const Module = require("../models/module");
 const User = require("../models/user");
 
 require("dotenv").config();
 
+function throwError(errorText, statusCode) {
+  const error = new Error(errorText);
+  error.statusCode = statusCode;
+  throw error;
+}
+
+function generateRandomNo() {
+  var low = Math.ceil(1);
+  var high = Math.floor(1000);
+  var randomFloat = low + Math.random() * (high - low);
+  return Math.ceil(randomFloat);
+}
+
 exports.getStudents = async (req, res, next) => {
   try {
     const users = await User.find({ role: "student" });
 
-    if (users.length <= 0) {
-      const error = new Error("No Students Registered");
-      error.statusCode = 404;
-      throw error;
-    }
+    if (users.length <= 0) throwError("No students registered", 404);
 
     res.status(200).json({ data: users });
   } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-      err.message = "Server error";
-    }
     next(err);
   }
 };
@@ -30,18 +32,10 @@ exports.getInstructors = async (req, res, next) => {
   try {
     const users = await User.find({ role: "instructor" });
 
-    if (users.length <= 0) {
-      const error = new Error("No Instructor Registered");
-      error.statusCode = 404;
-      throw error;
-    }
+    if (users.length <= 0) throwError("No instructor registered!", 404);
 
     res.status(200).json({ data: users });
   } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-      err.message = "Server error";
-    }
     next(err);
   }
 };
@@ -49,25 +43,12 @@ exports.getInstructors = async (req, res, next) => {
 exports.getModules = async (req, res, next) => {
   try {
     const modules = await Module.find();
-    if (modules.length > 0) {
-      res.status(200).json({ data: modules });
-    } else {
-      res.status(200).json({ msg: "no modules created" });
-    }
+    if (modules.length === 0) throwError("no modules created", 404);
+
+    res.status(200).json({ data: modules });
   } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-      err.message = "Server error";
-    }
     next(err);
   }
-};
-
-const generateRandomNo = () => {
-  var low = Math.ceil(1);
-  var high = Math.floor(1000);
-  var randomFloat = low + Math.random() * (high - low);
-  return Math.ceil(randomFloat);
 };
 
 exports.addUser = async (req, res, next) => {
@@ -76,11 +57,7 @@ exports.addUser = async (req, res, next) => {
   try {
     const userExists = await User.findOne({ email: email });
 
-    if (userExists) {
-      const error = new Error("User already exists");
-      error.statusCode = 409;
-      throw error;
-    }
+    if (userExists) throwError("User already exists", 409);
 
     let amount = 0;
     let moduleList = [];
@@ -91,21 +68,16 @@ exports.addUser = async (req, res, next) => {
     for (var mdl of modules) {
       const module = await Module.findOne({ name: mdl });
 
-      if (!module) {
-        const error = new Error("Module does not exist");
-        error.statusCode = 404;
-        throw error;
-      }
+      if (!module) throwError("Module not found", 404);
 
       moduleList.push({
         name: mdl,
         amount: module.feeAmount,
       });
 
-      amount += module.feeAmount;
+      if (role === "student") amount += module.feeAmount;
     }
 
-    // student has a fee balance field
     newUser = new User({
       code: "JW-" + generateRandomNo(),
       name: name,
@@ -134,11 +106,7 @@ exports.deleteUser = async (req, res, next) => {
   try {
     const user = await User.findById(userId);
 
-    if (!user) {
-      const error = new Error("User does not exist in the database!");
-      error.statusCode = 404;
-      throw error;
-    }
+    if (!user) throwError("User does not exist!", 404);
 
     await user.remove();
 
@@ -154,11 +122,10 @@ exports.updateStudentFee = async (req, res, next) => {
   try {
     const user = await User.findById(id);
 
-    if (!user) {
-      const error = new Error("User does not exist in the database!");
-      error.statusCode = 404;
-      throw error;
-    }
+    if (!user) throwError("User does not exist", 404);
+
+    if (amount > user.fee_balance)
+      throwError("Amount must be less than or equal to the fee balance", 409);
 
     if (user.fee_balance <= 0) {
       user.fee_balance = 0;
@@ -174,16 +141,12 @@ exports.updateStudentFee = async (req, res, next) => {
 };
 
 exports.addModule = async (req, res, next) => {
-  const { title, uniqueCode, fee, topics } = req.body;
+  const { title, fee, topics } = req.body;
 
   try {
     const moduleExist = await Module.findOne({ name: title.toLowerCase() });
 
-    if (moduleExist) {
-      const error = new Error("module already exists");
-      error.statusCode = 409;
-      throw error;
-    }
+    if (moduleExist) throwError("Module already exists", 409);
 
     let newModule = new Module({
       name: title.toLowerCase(),
@@ -205,28 +168,21 @@ exports.deleteModule = async (req, res, next) => {
 
   try {
     const module = await Module.findById(id);
-    if (!module) {
-      const error = new Error("No module with that id");
-      error.statusCode = 404;
-      throw error;
-    }
+    if (!module) throwError("Module not found", 404);
 
     await module.remove();
     res.status(201).json({ msg: "deleted record " + id });
   } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
     next(err);
   }
 };
 
-exports.enrollStudent = async (req, res, next) => {
-  const userId = req.params.studentId;
+exports.enrollUser = async (req, res, next) => {
+  const userId = req.params.userId;
 
   const moduleName = req.body.moduleName;
 
-  console.log(userId, req.body);
+  console.log(userId, moduleName);
 
   try {
     const user = await User.findById(userId);
@@ -234,20 +190,21 @@ exports.enrollStudent = async (req, res, next) => {
 
     const moduleExists = user.modules.some((mdl) => mdl.name === module.name);
 
-    if (moduleExists) {
-      const error = new Error("Student already enrolled to module");
-      error.statusCode = 409;
-      throw error;
-    }
+    if (moduleExists) throwError("User already enrolled to course", 409);
 
     const updatedModuleList = [...user.modules];
 
-    updatedModuleList.push({ name: module.name });
+    updatedModuleList.push({ name: module.name, amount: module.feeAmount });
 
     user.modules = updatedModuleList;
-    user.fee_balance += module.feeAmount;
+
+    // update fee balance for students
+    if (user.role === "student") user.fee_balance += module.feeAmount;
 
     const updatedUser = await user.save();
+
+    console.log(updatedUser);
+
     res.status(201).json({ updatedUser });
   } catch (err) {
     next(err);

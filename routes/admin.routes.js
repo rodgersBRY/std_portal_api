@@ -20,10 +20,10 @@ router.post("/add-module", isAuth, adminController.addModule);
 
 router.post("/new-user", isAuth, adminController.addUser);
 
-router.post(
-  "/enroll-student/:studentId/",
+router.put(
+  "/enroll-user/:userId",
   isAuth,
-  adminController.enrollStudent
+  adminController.enrollUser
 );
 
 // put requests
