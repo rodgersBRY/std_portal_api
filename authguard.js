@@ -2,13 +2,15 @@ const jwt = require("jsonwebtoken");
 
 require("dotenv").config();
 
+function throwError(errorText, statusCode) {
+  const error = new Error(errorText);
+  error.statusCode = statusCode;
+  throw error;
+}
+
 module.exports = async (req, res, next) => {
   const authHeader = req.headers["authorization"];
-  if (!authHeader) {
-    const error = new Error("No headers received!");
-    error.statusCode = 401;
-    throw error;
-  }
+  if (!authHeader) throwError("Unauthorized", 401);
 
   const token = authHeader.split(" ")[0];
   let decodedToken;
@@ -22,11 +24,7 @@ module.exports = async (req, res, next) => {
     next(err);
   }
 
-  if (!decodedToken) {
-    const error = new Error("Unauthorized Operation!");
-    error.statusCode = 401;
-    throw error;
-  }
+  if (!decodedToken) throwError("Unauthorized!", 401);
 
   req.userId = decodedToken.userId;
   next();

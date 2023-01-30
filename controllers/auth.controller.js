@@ -3,18 +3,19 @@ const jwt = require("jsonwebtoken");
 
 const Admin = require("../models/admin.js");
 
+function throwError(errorText, statusCode) {
+  const error = new Error(errorText);
+  error.statusCode = statusCode;
+  throw error;
+}
+
 exports.register = async (req, res, next) => {
   const { name, email, password } = req.body;
 
   try {
     const user = await Admin.findOne({ email: email });
 
-    if (user) {
-      console.log('user already exists');
-      const error = new Error("User already exists. Log in");
-      error.statusCode = 409;
-      throw error;
-    }
+    if (user) throwError("An account with that email exists!", 409);
 
     const hashedPass = await bcrypt.hash(password, 12);
 
@@ -38,20 +39,12 @@ exports.login = async (req, res, next) => {
 
   try {
     const user = await Admin.findOne({ email: email });
-    if (!user) {
-      const error = new Error("User not found");
-      error.statusCode = 404;
-      throw error;
-    }
+    if (!user) throwError("That email does not exist!", 404);
 
     loadedUser = user;
 
     const passwordMatch = await bcrypt.compare(password, loadedUser.password);
-    if (!passwordMatch) {
-      const error = new Error("Wrong password!");
-      error.statusCode = 401;
-      throw error;
-    }
+    if (!passwordMatch) throwError("Wrong password!", 401);
 
     const token = jwt.sign(
       {
