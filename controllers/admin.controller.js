@@ -233,3 +233,24 @@ exports.getStudentsPerModule = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.updateStudentCheckInStatus = async (req, res, next) => {
+  const studentId = req.params.studentId;
+  const status = req.body.status;
+
+  console.log(studentId, status);
+
+  try {
+    const student = await User.findById(studentId);
+    if (!student) throwError("No student found", 404);
+
+    student.checkedIn = status;
+    const updatedStudent = await student.save();
+
+    console.log(updatedStudent);
+
+    res.status(201).json({ updatedStudent });
+  } catch (err) {
+    next(err);
+  }
+};
