@@ -23,7 +23,11 @@ router.post("/new-user", isAuth, adminController.addUser);
 router.put("/enroll-user/:userId", isAuth, adminController.enrollUser);
 
 // put requests
-router.put("/check-in/:studentId", isAuth, adminController.updateStudentCheckInStatus);
+router.put(
+  "/check-in/:studentId",
+  isAuth,
+  adminController.updateStudentCheckInStatus
+);
 
 router.put("/update-fee", isAuth, adminController.updateStudentFee);
 

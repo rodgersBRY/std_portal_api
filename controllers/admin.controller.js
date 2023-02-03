@@ -203,8 +203,6 @@ exports.enrollUser = async (req, res, next) => {
 
     const updatedUser = await user.save();
 
-    console.log(updatedUser);
-
     res.status(201).json({ updatedUser });
   } catch (err) {
     next(err);
@@ -238,19 +236,17 @@ exports.updateStudentCheckInStatus = async (req, res, next) => {
   const studentId = req.params.studentId;
   const status = req.body.status;
 
-  console.log(studentId, status);
-
   try {
     const student = await User.findById(studentId);
     if (!student) throwError("No student found", 404);
 
     student.checkedIn = status;
-    const updatedStudent = await student.save();
 
-    console.log(updatedStudent);
+    const updatedStudent = await student.save();
 
     res.status(201).json({ updatedStudent });
   } catch (err) {
     next(err);
   }
 };
+
