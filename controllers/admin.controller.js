@@ -250,3 +250,14 @@ exports.updateStudentCheckInStatus = async (req, res, next) => {
   }
 };
 
+exports.totalAttendance = async (req, res, next) => {
+  try {
+    const students = await User.find({ checkedIn: true, role: "student" });
+
+    let totalAttendance = students.length;
+
+    res.status(200).json({ totalAttendance });
+  } catch (err) {
+    next(err);
+  }
+};

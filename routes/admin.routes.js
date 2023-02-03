@@ -15,6 +15,8 @@ router.get(
 
 router.get("/instructors", adminController.getInstructors);
 
+router.get("/total-attendants", adminController.totalAttendance);
+
 // post requests
 router.post("/add-module", isAuth, adminController.addModule);
 
