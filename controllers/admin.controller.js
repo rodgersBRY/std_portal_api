@@ -60,6 +60,7 @@ exports.addUser = async (req, res, next) => {
     if (userExists) throwError("User already exists", 409);
 
     let amount = 0;
+    let userActivity = [];
     let moduleList = [];
 
     let newUser;
@@ -75,6 +76,12 @@ exports.addUser = async (req, res, next) => {
         amount: module.feeAmount,
       });
 
+      userActivity.push({
+        title: "Course Enrollment",
+        value: mdl,
+        ts: Date.now(),
+      });
+
       if (role === "student") amount += module.feeAmount;
     }
 
@@ -87,6 +94,7 @@ exports.addUser = async (req, res, next) => {
       age: parseInt(age),
       gender: gender,
       modules: moduleList,
+      activity: userActivity,
       fee_balance: amount,
     });
 
@@ -132,6 +140,16 @@ exports.updateStudentFee = async (req, res, next) => {
     } else {
       user.fee_balance -= parseInt(amount);
     }
+
+    // keep a log of the user fee payment activity
+    const updatedActivityList = [...user.activity];
+    updatedActivityList.push({
+      title: "Fee Payment",
+      value: amount,
+      ts: Date.now(),
+    });
+
+    user.activity = updatedActivityList;
 
     const resp = await user.save();
     res.status(201).json({ resp });
@@ -193,10 +211,17 @@ exports.enrollUser = async (req, res, next) => {
     if (moduleExists) throwError("User already enrolled to course", 409);
 
     const updatedModuleList = [...user.modules];
+    const updatedActivityList = [...user.activity];
 
     updatedModuleList.push({ name: module.name, amount: module.feeAmount });
+    updatedActivityList.push({
+      title: "Course Enrollment",
+      value: module.name,
+      ts: Date.now(),
+    });
 
     user.modules = updatedModuleList;
+    user.activity = updatedActivityList;
 
     // update fee balance for students
     if (user.role === "student") user.fee_balance += module.feeAmount;

@@ -39,6 +39,13 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    activity: [
+      {
+        title: String,
+        value: String,
+        ts: Date,
+      },
+    ],
     modules: [{ name: String, amount: Number }],
   },
   { timestamps: true }
