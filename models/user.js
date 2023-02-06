@@ -43,6 +43,7 @@ const userSchema = new Schema(
       {
         title: String,
         value: String,
+        prev_balance: Number,
         ts: Date,
       },
     ],

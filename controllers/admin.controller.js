@@ -76,13 +76,14 @@ exports.addUser = async (req, res, next) => {
         amount: module.feeAmount,
       });
 
+      if (role === "student") amount += module.feeAmount;
+
       userActivity.push({
         title: "Course Enrollment",
         value: mdl,
+        prev_balance: amount,
         ts: Date.now(),
       });
-
-      if (role === "student") amount += module.feeAmount;
     }
 
     newUser = new User({
@@ -132,6 +133,8 @@ exports.updateStudentFee = async (req, res, next) => {
 
     if (!user) throwError("User does not exist", 404);
 
+    let prev_balance = user.fee_balance;
+
     if (amount > user.fee_balance)
       throwError("Amount must be less than or equal to the fee balance", 409);
 
@@ -146,6 +149,7 @@ exports.updateStudentFee = async (req, res, next) => {
     updatedActivityList.push({
       title: "Fee Payment",
       value: amount,
+      prev_balance: prev_balance,
       ts: Date.now(),
     });
 
@@ -200,8 +204,6 @@ exports.enrollUser = async (req, res, next) => {
 
   const moduleName = req.body.moduleName;
 
-  console.log(userId, moduleName);
-
   try {
     const user = await User.findById(userId);
     const module = await Module.findOne({ name: moduleName });
@@ -216,7 +218,8 @@ exports.enrollUser = async (req, res, next) => {
     updatedModuleList.push({ name: module.name, amount: module.feeAmount });
     updatedActivityList.push({
       title: "Course Enrollment",
-      value: module.name,
+      value: module.name + " - " + module.feeAmount,
+      prev_balance: user.fee_balance,
       ts: Date.now(),
     });
 
