@@ -289,3 +289,22 @@ exports.totalAttendance = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.queryUserRange = async (req, res, next) => {
+  // const start = req.body.startDate;
+
+  const endDate = new Date();
+  endDate.setHours(0, 0, 0, 0);
+
+  const startDate = new Date(endDate - 24 * 60 * 60 * 1000);
+
+  try {
+    const users = await User.find({
+      createdAt: { $gte: startDate, $lt: endDate },
+    });
+
+    res.status(200).json(users);
+  } catch (err) {
+    next(err);
+  }
+};
