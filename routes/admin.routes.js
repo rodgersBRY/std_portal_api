@@ -14,7 +14,7 @@ router.get(
 );
 router.get("/instructors", adminController.getInstructors);
 router.get("/total-attendants", adminController.totalAttendance);
-router.get("/users-range", adminController.queryUserRange);
+router.get('/reports', adminController.generateStudentReports);
 
 // post requests
 router.post("/add-module", isAuth, adminController.addModule);

@@ -35,6 +35,13 @@ const userSchema = new Schema(
     fee_balance: {
       type: Number,
     },
+    amount_paid: {
+      type: Number,
+      default: 0
+    },
+    amount_payable: {
+      type: Number,
+    },
     checkedIn: {
       type: Boolean,
       default: false,

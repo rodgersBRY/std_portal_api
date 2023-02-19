@@ -76,7 +76,9 @@ exports.addUser = async (req, res, next) => {
         amount: module.feeAmount,
       });
 
-      if (role === "student") amount += module.feeAmount;
+      if (role === "student") {
+        amount += module.feeAmount;
+      }
 
       userActivity.push({
         title: "Course Enrollment",
@@ -97,6 +99,7 @@ exports.addUser = async (req, res, next) => {
       modules: moduleList,
       activity: userActivity,
       fee_balance: amount,
+      amount_payable: amount,
     });
 
     await newUser.save();
@@ -142,6 +145,7 @@ exports.updateStudentFee = async (req, res, next) => {
       user.fee_balance = 0;
     } else {
       user.fee_balance -= parseInt(amount);
+      user.amount_paid += parseInt(amount);
     }
 
     // keep a log of the user fee payment activity
@@ -227,7 +231,10 @@ exports.enrollUser = async (req, res, next) => {
     user.activity = updatedActivityList;
 
     // update fee balance for students
-    if (user.role === "student") user.fee_balance += module.feeAmount;
+    if (user.role === "student") {
+      user.fee_balance += module.feeAmount;
+      user.amount_payable += module.feeAmount;
+    }
 
     const updatedUser = await user.save();
 
@@ -290,20 +297,24 @@ exports.totalAttendance = async (req, res, next) => {
   }
 };
 
-exports.queryUserRange = async (req, res, next) => {
-  // const start = req.body.startDate;
+exports.generateStudentReports = async (req, res, next) => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth();
 
-  const endDate = new Date();
-  endDate.setHours(0, 0, 0, 0);
-
-  const startDate = new Date(endDate - 24 * 60 * 60 * 1000);
+  const startOfPrevMonth = new Date(year, month - 1, 1);
+  const endOfPrevMonth = new Date(year, month, 0);
 
   try {
-    const users = await User.find({
-      createdAt: { $gte: startDate, $lt: endDate },
+    const students = await User.find({
+      role: "student",
+      createdAt: {
+        $gte: startOfPrevMonth,
+        $lte: endOfPrevMonth,
+      },
     });
 
-    res.status(200).json(users);
+    res.status(200).json(students);
   } catch (err) {
     next(err);
   }
