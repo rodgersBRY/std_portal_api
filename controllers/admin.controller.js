@@ -52,7 +52,7 @@ exports.getModules = async (req, res, next) => {
 };
 
 exports.addUser = async (req, res, next) => {
-  const { name, email, role, modules, phone, age, gender } = req.body;
+  const { name, email, role, modules, phone, age, gender, enrollDate } = req.body;
 
   try {
     const userExists = await User.findOne({ email: email });
@@ -100,6 +100,7 @@ exports.addUser = async (req, res, next) => {
       activity: userActivity,
       fee_balance: amount,
       amount_payable: amount,
+      createdAt: enrollDate || new Date.now(),
     });
 
     await newUser.save();
