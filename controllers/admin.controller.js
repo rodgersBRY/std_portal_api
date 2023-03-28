@@ -52,7 +52,7 @@ exports.getModules = async (req, res, next) => {
 };
 
 exports.addUser = async (req, res, next) => {
-  const { name, email, role, modules, phone, age, gender, enrollDate } =
+  const { name, email, role, modules, phone, age, gender, enrollDate, paid } =
     req.body;
 
   try {
@@ -101,6 +101,7 @@ exports.addUser = async (req, res, next) => {
       activity: userActivity,
       fee_balance: amount,
       amount_payable: amount,
+      registrationFee: paid,
       createdAt: enrollDate || new Date.now(),
     });
 

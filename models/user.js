@@ -32,12 +32,17 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
+    registrationFee: {
+      type: Boolean,
+      default: false,
+      required: true,
+    },
     fee_balance: {
       type: Number,
     },
     amount_paid: {
       type: Number,
-      default: 0
+      default: 0,
     },
     amount_payable: {
       type: Number,
