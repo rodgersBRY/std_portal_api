@@ -126,6 +126,7 @@ exports.edituser = async (req, res, next) => {
     user.email = email;
     user.phone = phone;
     user.age = age;
+    user.
     user.createdAt = createdAt;
 
     const result = await user.save();
