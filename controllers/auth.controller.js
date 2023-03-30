@@ -10,7 +10,7 @@ function throwError(errorText, statusCode) {
 }
 
 exports.register = async (req, res, next) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, role } = req.body;
 
   try {
     const user = await Admin.findOne({ email: email });
@@ -23,6 +23,7 @@ exports.register = async (req, res, next) => {
       name: name,
       email: email,
       password: hashedPass,
+      role: role || 'moderator'
     });
 
     await newUser.save();

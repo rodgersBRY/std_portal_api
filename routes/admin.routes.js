@@ -18,7 +18,7 @@ router.get('/reports', adminController.generateStudentReports);
 
 // post requests
 router.post("/add-module", isAuth, adminController.addModule);
-router.post("/new-user", isAuth, adminController.addUser);
+router.post("/new-user", adminController.addUser);
 
 // put requests
 router.put("/edit-user/:id", adminController.edituser);
