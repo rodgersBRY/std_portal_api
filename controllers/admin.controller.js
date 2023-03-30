@@ -52,8 +52,18 @@ exports.getModules = async (req, res, next) => {
 };
 
 exports.addUser = async (req, res, next) => {
-  const { name, email, role, modules, phone, age, gender, enrollDate, paid } =
-    req.body;
+  const {
+    name,
+    email,
+    role,
+    idNo,
+    modules,
+    phone,
+    age,
+    gender,
+    enrollDate,
+    paid,
+  } = req.body;
 
   try {
     const userExists = await User.findOne({ email: email });
@@ -100,6 +110,7 @@ exports.addUser = async (req, res, next) => {
       modules: moduleList,
       activity: userActivity,
       fee_balance: amount,
+      idNo: idNo,
       amount_payable: amount,
       registrationFee: paid,
       createdAt: enrollDate || new Date.now(),
@@ -114,9 +125,8 @@ exports.addUser = async (req, res, next) => {
 
 exports.edituser = async (req, res, next) => {
   const userId = req.params.id;
-  const { name, email, phone, age, createdAt } = req.body;
 
-  console.log(createdAt);
+  const { name, email, phone, age, paid } = req.body;
 
   try {
     const user = await User.findById(userId);
@@ -127,7 +137,7 @@ exports.edituser = async (req, res, next) => {
     user.email = email;
     user.phone = phone;
     user.age = age;
-    user.createdAt = createdAt;
+    user.registrationFee = paid;
 
     const result = await user.save();
 
