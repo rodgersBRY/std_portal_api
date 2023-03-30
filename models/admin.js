@@ -16,6 +16,12 @@ const adminSchema = new Schema(
       type: String,
       required: true,
     },
+    role: {
+      type: String,
+      enum: ["admin", "moderator"],
+      default: "moderator",
+      required: true,
+    },
   },
   { timestamps: true }
 );
