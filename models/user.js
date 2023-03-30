@@ -64,8 +64,11 @@ const userSchema = new Schema(
       },
     ],
     modules: [{ name: String, amount: Number }],
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    }
   },
-  { timestamps: true }
 );
 
 module.exports = mongoose.model("User", userSchema);

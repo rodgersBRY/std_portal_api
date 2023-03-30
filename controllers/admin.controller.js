@@ -125,9 +125,8 @@ exports.addUser = async (req, res, next) => {
 
 exports.edituser = async (req, res, next) => {
   const userId = req.params.id;
-  const { name, email, phone, age, paid, createdAt } = req.body;
 
-  console.log(createdAt);
+  const { name, email, phone, age, paid } = req.body;
 
   try {
     const user = await User.findById(userId);
@@ -139,7 +138,6 @@ exports.edituser = async (req, res, next) => {
     user.phone = phone;
     user.age = age;
     user.registrationFee = paid;
-    user.createdAt = createdAt;
 
     const result = await user.save();
 
