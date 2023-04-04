@@ -14,11 +14,14 @@ const moduleSchema = new Schema({
   topics: [
     {
       title: {
-        type: String,
-        required: true,
+        type: String
       },
     },
   ],
+  regFee: {
+    type: Number,
+    default: 0,
+  },
   feeAmount: {
     type: Number,
     required: true,

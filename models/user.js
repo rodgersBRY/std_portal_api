@@ -37,8 +37,8 @@ const userSchema = new Schema(
       required: true
     },
     registrationFee: {
-      type: Boolean,
-      default: false,
+      type: Number,
+      default: 0,
       required: true
     },
     fee_balance: {
@@ -59,7 +59,7 @@ const userSchema = new Schema(
       {
         title: String,
         value: String,
-        prev_balance: Number,
+        prev_balance: String,
         ts: Date
       },
     ],
