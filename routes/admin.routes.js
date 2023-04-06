@@ -18,10 +18,10 @@ router.get('/reports', adminController.generateStudentReports);
 
 // post requests
 router.post("/add-module", isAuth, adminController.addModule);
-router.post("/new-user", adminController.addUser);
+router.post("/new-user", isAuth, adminController.addUser);
 
 // put requests
-router.put("/edit-user/:id", adminController.edituser);
+router.put("/edit-user/:id", isAuth, adminController.edituser);
 router.put("/enroll-user/:userId", isAuth, adminController.enrollUser);
 router.put(
   "/check-in/:studentId",
