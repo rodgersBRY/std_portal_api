@@ -62,7 +62,7 @@ exports.addUser = async (req, res, next) => {
     age,
     gender,
     enrollDate,
-    regFee,
+    paid,
   } = req.body;
 
   try {
@@ -71,7 +71,6 @@ exports.addUser = async (req, res, next) => {
     if (userExists) throwError("User already exists", 409);
 
     let amount = 0;
-    let admFee = 0;
     let userActivity = [];
     let moduleList = [];
 
@@ -91,15 +90,6 @@ exports.addUser = async (req, res, next) => {
       if (role === "student") {
         amount += module.feeAmount;
       }
-
-      admFee += module.regFee;
-
-      userActivity.push({
-        title: "Admission Fee payment",
-        value: admFee,
-        prev_balance: "-",
-        ts: Date.now(),
-      });
 
       userActivity.push({
         title: "Course Enrollment",
@@ -122,7 +112,7 @@ exports.addUser = async (req, res, next) => {
       fee_balance: amount,
       idNo: idNo,
       amount_payable: amount,
-      registrationFee: admFee,
+      registrationFee: paid,
       createdAt: enrollDate || new Date.now(),
     });
 
@@ -195,6 +185,7 @@ exports.updateStudentFee = async (req, res, next) => {
 
     // keep a log of the user fee payment activity
     const updatedActivityList = [...user.activity];
+    
     updatedActivityList.push({
       title: "Fee Payment",
       value: amount,
@@ -212,7 +203,7 @@ exports.updateStudentFee = async (req, res, next) => {
 };
 
 exports.addModule = async (req, res, next) => {
-  const { title, fee, regFee, topics } = req.body;
+  const { title, fee, topics } = req.body;
 
   try {
     const moduleExist = await Module.findOne({ name: title.toLowerCase() });
@@ -222,7 +213,6 @@ exports.addModule = async (req, res, next) => {
     let newModule = new Module({
       name: title.toLowerCase(),
       shortCode: "JC-" + generateRandomNo(),
-      regFee: regFee,
       feeAmount: fee,
       topics: topics,
     });
@@ -286,6 +276,7 @@ exports.enrollUser = async (req, res, next) => {
 
     res.status(201).json({ updatedUser });
   } catch (err) {
+    console.log(err);
     next(err);
   }
 };
