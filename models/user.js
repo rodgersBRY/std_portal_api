@@ -36,11 +36,6 @@ const userSchema = new Schema(
       type: String,
       required: true
     },
-    registrationFee: {
-      type: Boolean,
-      default: false,
-      required: true
-    },
     fee_balance: {
       type: Number
     },
