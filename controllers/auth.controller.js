@@ -40,7 +40,7 @@ exports.login = async (req, res, next) => {
 
   try {
     const user = await Admin.findOne({ email: email });
-    if (!user) throwError("That email does not exist!", 404);
+    if (!user) throwError("That user does not exist!", 404);
 
     loadedUser = user;
 

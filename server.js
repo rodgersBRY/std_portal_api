@@ -40,6 +40,8 @@ app.use((error, req, res, next) => {
   });
 });
 
+const port = process.env.PORT || 3000
+
 app.listen(process.env.PORT, () => {
-  console.log("app running on port 4000");
+  console.log("Jarvis is up and running: " + port);
 });

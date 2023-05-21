@@ -65,7 +65,7 @@ exports.addUser = async (req, res, next) => {
   } = req.body;
 
   try {
-    const userExists = await User.findOne({ email: email });
+    const userExists = await User.findOne({ email: email, phone: phone });
 
     if (userExists) throwError("User already exists", 409);
 
