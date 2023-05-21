@@ -9,12 +9,12 @@ router.get("/modules", adminController.getModules);
 router.get("/students", adminController.getStudents);
 
 router.get(
-  "/module-student/:moduleTitle",
+  "/module-student/:moduleTitle", isAuth,
   adminController.getStudentsPerModule
 );
-router.get("/instructors", adminController.getInstructors);
-router.get("/total-attendants", adminController.totalAttendance);
-router.get('/reports', adminController.generateStudentReports);
+router.get("/instructors", isAuth, adminController.getInstructors);
+router.get("/total-attendants", isAuth, adminController.totalAttendance);
+router.get('/reports', isAuth, adminController.generateStudentReports);
 
 // post requests
 router.post("/add-module", isAuth, adminController.addModule);

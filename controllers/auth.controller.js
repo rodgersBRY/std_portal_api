@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { validationResult } = require("express-validator");
 
 const Admin = require("../models/admin.js");
 
@@ -23,7 +24,7 @@ exports.register = async (req, res, next) => {
       name: name,
       email: email,
       password: hashedPass,
-      role: role || 'moderator'
+      role: role || "moderator",
     });
 
     await newUser.save();
@@ -35,7 +36,7 @@ exports.register = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
   const { email, password } = req.body;
-
+  
   let loadedUser;
 
   try {
