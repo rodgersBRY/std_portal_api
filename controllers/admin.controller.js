@@ -191,7 +191,7 @@ exports.updateStudentFee = async (req, res, next) => {
     updatedActivityList.push({
       title: "Fee Payment",
       value: amount,
-      prev_balance: prev_balance,
+      prev_balance: user.fee_balance,
       ts: Date.now(),
     });
 
