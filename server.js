@@ -18,6 +18,9 @@ mongoose
   })
   .then(() => {
     console.log("mongoDB connected");
+  })
+  .catch((err) => {
+    console.error("Error connecting to MongoDB:\n", err);
   });
 
 app.use(logger("dev"));

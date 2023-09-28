@@ -22,7 +22,7 @@ exports.getStudents = async (req, res, next) => {
 
     if (users.length <= 0) throwError("No students registered", 404);
 
-    res.status(200).json({ data: users });
+    res.status(200).json({ students: users });
   } catch (err) {
     next(err);
   }
@@ -52,17 +52,8 @@ exports.getModules = async (req, res, next) => {
 };
 
 exports.addUser = async (req, res, next) => {
-  const {
-    name,
-    email,
-    role,
-    idNo,
-    modules,
-    phone,
-    age,
-    gender,
-    enrollDate,
-  } = req.body;
+  const { name, email, role, idNo, modules, phone, age, gender, enrollDate } =
+    req.body;
 
   try {
     const userExists = await User.findOne({ email: email, phone: phone });
@@ -124,7 +115,7 @@ exports.addUser = async (req, res, next) => {
 exports.edituser = async (req, res, next) => {
   const userId = req.params.id;
 
-  const { name, email, phone, age } = req.body;
+  const { name, email, phone, age, fee_balance } = req.body;
 
   try {
     const user = await User.findById(userId);
@@ -136,9 +127,23 @@ exports.edituser = async (req, res, next) => {
     user.phone = phone;
     user.age = age;
 
+    if (fee_balance != user.fee_balance) {
+      let userActivity = [...user.activity];
+
+      userActivity.push({
+        title: "Edit Fee Balance",
+        value: fee_balance,
+        prev_balance: user.fee_balance,
+        ts: Date.now(),
+      });
+
+      user.fee_balance = fee_balance;
+      user.activity = userActivity;
+    }
+
     const result = await user.save();
 
-    res.status(201).json({ result });
+    res.status(201).json({ result, message: "User details updated!" });
   } catch (err) {
     next(err);
   }
@@ -182,7 +187,7 @@ exports.updateStudentFee = async (req, res, next) => {
 
     // keep a log of the user fee payment activity
     const updatedActivityList = [...user.activity];
-    
+
     updatedActivityList.push({
       title: "Fee Payment",
       value: amount,
