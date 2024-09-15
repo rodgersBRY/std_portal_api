@@ -1,25 +1,20 @@
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt"),
+  jwt = require("jsonwebtoken");
 
-const Admin = require("../models/admin.js");
-
-function throwError(errorText, statusCode) {
-  const error = new Error(errorText);
-  error.statusCode = statusCode;
-  throw error;
-}
+const { throwError } = require("../helpers"),
+  User = require("../models/user");
 
 exports.register = async (req, res, next) => {
   const { name, email, password, role } = req.body;
 
   try {
-    const user = await Admin.findOne({ email: email });
+    const user = await User.findOne({ email: email });
 
     if (user) throwError("An account with that email exists!", 409);
 
     const hashedPass = await bcrypt.hash(password, 12);
 
-    const newUser = new Admin({
+    const newUser = new User({
       name: name,
       email: email,
       password: hashedPass,
@@ -39,7 +34,7 @@ exports.login = async (req, res, next) => {
   let loadedUser;
 
   try {
-    const user = await Admin.findOne({ email: email });
+    const user = await User.findOne({ email: email });
     if (!user) throwError("That user does not exist!", 404);
 
     loadedUser = user;

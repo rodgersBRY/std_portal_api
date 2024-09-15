@@ -1,36 +1,34 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const cors = require("cors");
 const logger = require("morgan");
 
+const dbConnect = require('./services/db_config')
+
 require("dotenv").config();
 
-const adminRoutes = require("./routes/admin.routes");
-const authRoutes = require("./routes/auth.routes");
+const authRoutes = require("./routes/auth");
+const studentRoutes = require("./routes/student")
 
 const app = express();
 
-// connect to mongoDB using mongoose
-mongoose
-  .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
-    console.log("mongoDB connected");
-  })
-  .catch((err) => {
-    console.error("Error connecting to MongoDB:\n", err);
-  });
+// mongo connect
+dbConnect()
 
-app.use(logger("dev"));
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app
+  .use(logger("dev"))
+  .use(cors())
+  .use(express.json())
+  .use(express.urlencoded({ extended: false }));
 
 // api endpoints
-app.use("/api/auth", authRoutes);
-app.use("/api/admin", adminRoutes);
+let resources = [
+  { path: "/api/auth", resource: authRoutes },
+  { path: "/api/students", resource: studentRoutes },
+];
+
+resources.forEach((res) => {
+  app.use(res.path, res.resource);
+});
 
 // error handling middleware
 app.use((error, req, res, next) => {
