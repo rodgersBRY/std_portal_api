@@ -1,15 +1,19 @@
-const app = require("express").Router();
-const controller = require("../controllers/student");
+const app = require("express").Router(),
+  controller = require("../controllers/student"),
+  authGuard = require("../middleware/authguard");
 
-app.route("/").get(controller.getStudents).post(controller.newStudent);
+app
+  .route("/")
+  .get(authGuard, controller.getStudents)
+  .post(authGuard, controller.newStudent);
 
 app
   .route("/:id")
-  .get(controller.getStudent)
-  .put(controller.editStudent)
-  .delete(controller.deleteStudent);
+  .get(authGuard, controller.getStudent)
+  .put(authGuard, controller.editStudent)
+  .delete(authGuard, controller.deleteStudent);
 
-app.route("/enroll/:id").put(controller.addModule);
-app.route("/update-fee/:id").put(controller.updateFeePayment);
+app.route("/enroll/:id").put(authGuard, controller.addModule);
+app.route("/update-fee/:id").put(authGuard, controller.updateFeePayment);
 
 module.exports = app;

@@ -1,18 +1,19 @@
-const express = require("express");
-const cors = require("cors");
-const logger = require("morgan");
-
-const dbConnect = require('./services/db_config')
+const express = require("express"),
+  cors = require("cors"),
+  logger = require("morgan");
 
 require("dotenv").config();
 
-const authRoutes = require("./routes/auth");
-const studentRoutes = require("./routes/student")
+const dbConnect = require("./services/db_config"),
+  authRoutes = require("./routes/auth"),
+  studentRoutes = require("./routes/student");
 
 const app = express();
 
+const port = process.env.PORT || 4000;
+
 // mongo connect
-dbConnect()
+dbConnect();
 
 app
   .use(logger("dev"))
@@ -41,8 +42,6 @@ app.use((error, req, res, next) => {
   });
 });
 
-const port = process.env.PORT || 4000;
-
-app.listen(process.env.PORT, () => {
+app.listen(port, () => {
   console.log("Jarvis is up and running: " + port);
 });
