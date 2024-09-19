@@ -47,7 +47,7 @@ exports.newStudent = async (req, res, next) => {
     let studentActivity = [];
 
     modules.forEach((mdl) => {
-      amount += mdl.amount;
+      amount += parseInt(mdl.amount, 10);
 
       studentActivity.push({
         title: "Course Enrollment",
@@ -84,7 +84,7 @@ exports.newStudent = async (req, res, next) => {
 exports.editStudent = async (req, res, next) => {
   const id = req.params.id;
 
-  const { name, email, phone } = req.body;
+  const { name, email, phone, idNo } = req.body;
 
   try {
     const student = await getStudentById(id);
@@ -95,7 +95,7 @@ exports.editStudent = async (req, res, next) => {
       name,
       email,
       phone,
-      activity,
+      idNo,
     });
 
     res
