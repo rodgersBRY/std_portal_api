@@ -17,6 +17,10 @@ const moduleSchema = new Schema(
 
 const studentSchema = new Schema(
   {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
     code: {
       type: String,
       required: true,
@@ -72,11 +76,12 @@ const studentSchema = new Schema(
 
 studentSchema.index({ email: 1 });
 studentSchema.index({ phone: 1 });
+studentSchema.index({ user: 1 });
 
 const Student = model("Student", studentSchema);
 
 module.exports = {
-  getStudents: () => Student.find(),
+  getStudents: (id) => Student.find({ user: id }),
   getStudentById: (id) => Student.findById(id),
   getStudentByEmailPhone: (email, phone) =>
     Student.findOne({ email: email, phone: phone }),

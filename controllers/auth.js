@@ -29,11 +29,14 @@ exports.register = async (req, res, next) => {
 };
 
 exports.login = async (req, res, next) => {
-  const { email, password } = req.body;
-
-  let loadedUser;
-
   try {
+    const { email, password } = req.body;
+
+    if (email == "" || password == "")
+      throwError("All fields are required!", 401);
+
+    let loadedUser;
+
     const user = await User.findOne({ email: email });
     if (!user) throwError("That user does not exist!", 404);
 

@@ -7,11 +7,10 @@ const {
   deleteStudentById,
 } = require("../models/student");
 const { throwError, generateRandomNo } = require("../helpers");
-const student = require("../models/student");
 
-exports.getStudents = async (_, res, next) => {
+exports.getStudents = async (req, res, next) => {
   try {
-    const students = await getStudents();
+    const students = await getStudents(req.userId);
 
     if (!students) throwError("Error fecthing students", 400);
 
@@ -59,6 +58,7 @@ exports.newStudent = async (req, res, next) => {
     });
 
     let studentData = {
+      user: req.userId,
       code: "JW-" + generateRandomNo(),
       name: name,
       email: email,
@@ -73,9 +73,9 @@ exports.newStudent = async (req, res, next) => {
       enrollDate: enrollDate,
     };
 
-    await addStudent(studentData);
+    const student = await addStudent(studentData);
 
-    res.status(201).json({ msg: "student created" });
+    res.status(201).json({ msg: "student created", student });
   } catch (err) {
     next(err);
   }
