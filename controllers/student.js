@@ -218,7 +218,7 @@ exports.updateFeePayment = async (req, res, next) => {
   }
 };
 
-exports.printReceipt = async (req, res, next) => {
+exports.printReceipt = async (_, res, next) => {
   try {
     const html = fs.readFileSync(path.join(__dirname, "receipt.html"), "utf-8");
 
