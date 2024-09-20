@@ -141,13 +141,13 @@ exports.addModule = async (req, res, next) => {
 
     // avoid duplicate modules for each student
     studentModules.forEach((mdl) => {
-      if (mdl.name == module.name.toLowerCase())
+      if (mdl.name.toLowerCase() == module.name.toLowerCase())
         throwError("Student already enrolled to course", 409);
     });
 
     // add enrolled module to list
     studentModules.push({
-      name: module.name.toLowerCase(),
+      name: module.name,
       amount: parseInt(module.amount),
     });
 
@@ -194,7 +194,7 @@ exports.updateFeePayment = async (req, res, next) => {
     let amount_paid = student.amount_paid;
 
     if (student.fee_balance - intAmount < 0)
-      throwError("amount is more than fee balance", 401);
+      throwError("The amount entered is higher than balance", 401);
 
     amount_paid += intAmount;
 
