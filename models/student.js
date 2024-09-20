@@ -87,6 +87,6 @@ module.exports = {
     Student.findOne({ email: email, phone: phone }),
   addStudent: (values) => new Student(values).save().then((student) => student),
   editStudentById: (id, values) =>
-    Student.findOneAndUpdate(id, values, { upsert: true, new: true }),
+    Student.findByIdAndUpdate(id, values, { upsert: true, new: true }),
   deleteStudentById: (id) => Student.findByIdAndDelete(id),
 };

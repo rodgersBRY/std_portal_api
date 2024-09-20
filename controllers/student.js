@@ -123,11 +123,9 @@ exports.deleteStudent = async (req, res, next) => {
 exports.addModule = async (req, res, next) => {
   const id = req.params.id;
 
-  const { modules } = req.body;
+  const { module } = req.body;
 
   try {
-    if (modules.length <= 0) throwError("Cannot submit zero modules", 401);
-
     const student = await getStudentById(id);
 
     let updatedActivities = [...student.activity];
@@ -135,38 +133,34 @@ exports.addModule = async (req, res, next) => {
     let fee = student.fee_balance;
     let payable = student.amount_payable;
 
-    modules.forEach((mdl) => {
-      // add enrolled module to list
-      studentModules.push(mdl);
-
-      // update the fee
-      fee += mdl.amount;
-      payable += mdl.amount;
-
-      //update the activity log
-      updatedActivities.push({
-        title: "Course Enrollment",
-        value: mdl.name + " - " + mdl.amount,
-        amount: fee,
-        ts: Date.now(),
-      });
+    // add enrolled module to list
+    studentModules.push({
+      name: module.name,
+      amount: parseInt(module.amount),
     });
 
-    console.log({
+    // update the fee
+    fee += parseInt(module.amount);
+    payable += parseInt(module.amount);
+
+    //update the activity log
+    updatedActivities.push({
+      title: "Course Enrollment",
+      value: module.name,
+      amount: parseInt(module.amount),
+      ts: Date.now(),
+    });
+
+    const data = {
       modules: studentModules,
       activity: updatedActivities,
       amount_payable: payable,
       fee_balance: fee,
-    });
+    };
 
-    const updatedStudent = editStudentById(id, {
-      modules: studentModules,
-      activity: updatedActivities,
-      amount_payable: payable,
-      fee_balance: fee,
-    });
+    const updatedStudent = await editStudentById(id, data);
 
-    res.status(201).json({ updatedStudent });
+    res.status(201).json(updatedStudent);
   } catch (err) {
     next(err);
   }
