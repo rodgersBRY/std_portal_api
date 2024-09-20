@@ -46,8 +46,14 @@ exports.newStudent = async (req, res, next) => {
     let amount = 0;
     let studentActivity = [];
 
-    modules.forEach((mdl) => {
-      amount += parseInt(mdl.amount, 10);
+    // convert module names to lowercase
+    const formattedModules = modules.map((mdl) => ({
+      name: mdl.name.toLowerCase(),
+      amount: parseInt(mdl.amount),
+    }));
+
+    formattedModules.forEach((mdl) => {
+      amount += mdl.amount;
 
       studentActivity.push({
         title: "Course Enrollment",
@@ -65,7 +71,7 @@ exports.newStudent = async (req, res, next) => {
       phone: phone,
       age: age,
       gender: gender,
-      modules: modules,
+      modules: formattedModules,
       activity: studentActivity,
       fee_balance: amount,
       idNo: idNo,
@@ -133,9 +139,15 @@ exports.addModule = async (req, res, next) => {
     let fee = student.fee_balance;
     let payable = student.amount_payable;
 
+    // avoid duplicate modules for each student
+    studentModules.forEach((mdl) => {
+      if (mdl.name == module.name.toLowerCase())
+        throwError("Student already enrolled to course", 409);
+    });
+
     // add enrolled module to list
     studentModules.push({
-      name: module.name,
+      name: module.name.toLowerCase(),
       amount: parseInt(module.amount),
     });
 
