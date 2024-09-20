@@ -64,6 +64,11 @@ const studentSchema = new Schema(
       type: Number,
       required: false,
     },
+    active: {
+      type: Boolean,
+      required: true,
+      default: true,
+    },
     enrollDate: {
       type: Date,
       required: true,

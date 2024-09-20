@@ -182,30 +182,32 @@ exports.updateFeePayment = async (req, res, next) => {
   try {
     const id = req.params.id;
 
-    const fee = req.body.fee;
+    const { amount, desc } = req.body;
+
+    let intAmount = parseInt(amount);
+
+    if (intAmount <= 0) throwError("Invalid amount", 401);
 
     const student = await getStudentById(id);
+    if (!student) throwError("Student cannot be found", 404);
 
     let amount_paid = student.amount_paid;
 
-    if (!student) throwError("Student cannot be found", 404);
-
-    if (student.fee_balance - fee < 0)
+    if (student.fee_balance - intAmount < 0)
       throwError("amount is more than fee balance", 401);
 
-    amount_paid += fee;
+    amount_paid += intAmount;
 
     let activity = [...student.activity];
-
     activity.push({
       title: "Fee Payment",
-      value: "",
-      amount: fee,
+      value: desc,
+      amount: intAmount,
       ts: Date.now(),
     });
 
     const updatedData = await editStudentById(id, {
-      fee_balance: student.fee_balance - fee,
+      fee_balance: student.fee_balance - intAmount,
       activity,
       amount_paid,
     });
