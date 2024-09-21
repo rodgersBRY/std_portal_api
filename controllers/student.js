@@ -1,12 +1,17 @@
 const {
-  getStudents,
-  getStudentByEmailPhone,
-  editStudentById,
-  addStudent,
-  getStudentById,
-  deleteStudentById,
-} = require("../models/student");
-const { throwError, generateRandomNo } = require("../helpers");
+    getStudents,
+    getStudentByEmailPhone,
+    editStudentById,
+    addStudent,
+    getStudentById,
+    deleteStudentById,
+  } = require("../models/student"),
+  { throwError, generateRandomNo } = require("../helpers"),
+  { createReceipt } = require("../helpers/receipt_pdf");
+
+const fs = require("fs");
+const path = require("path");
+const PDFDocument = require("pdfkit");
 
 exports.getStudents = async (req, res, next) => {
   try {
@@ -192,7 +197,7 @@ exports.updateFeePayment = async (req, res, next) => {
 
     let intAmount = parseInt(amount);
 
-    if (intAmount <= 0) throwError("Invalid amount", 401);
+    if (intAmount <= 0) throwError("Invalid value", 401);
 
     const student = await getStudentById(id);
     if (!student) throwError("Student cannot be found", 404);
@@ -212,13 +217,36 @@ exports.updateFeePayment = async (req, res, next) => {
       ts: Date.now(),
     });
 
-    const updatedData = await editStudentById(id, {
+    await editStudentById(id, {
       fee_balance: student.fee_balance - intAmount,
       activity,
       amount_paid,
     });
 
-    res.status(201).json(updatedData);
+    // print
+    const doc = new PDFDocument({ size: "A5", margin: 30 });
+
+    // set response headers
+    res.setHeader(
+      "content-disposition",
+      `attachment; filename=${student.name.split(" ")[0]}.pdf`
+    );
+    res.type("application/pdf");
+
+    // doc.pipe(fs.createWriteStream(path.join(__dirname, "receipt.pdf")));
+
+    doc.pipe(res);
+
+    const receiptData = {
+      name: student.name,
+      code: student.code,
+      amount: intAmount,
+      method: desc,
+    };
+
+    createReceipt(doc, receiptData);
+
+    doc.end();
   } catch (err) {
     next(err);
   }

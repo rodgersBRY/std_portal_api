@@ -4,7 +4,7 @@
   "description": "api for the student portal for Jowam Training Centre",
   "main": "server.js",
   "engines": {
-    "node": "14.x"
+    "node": ">=14"
   },
   "scripts": {
     "start": "node server.js",
@@ -30,7 +30,8 @@
     "html-pdf-node": "^1.0.8",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.6.7",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "pdfkit": "^0.15.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"
