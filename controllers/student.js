@@ -46,22 +46,27 @@ exports.newStudent = async (req, res, next) => {
     let amount = 0;
     let studentActivity = [];
 
-    // convert module names to lowercase
-    const formattedModules = modules.map((mdl) => ({
-      name: mdl.name.toLowerCase(),
-      amount: parseInt(mdl.amount),
-    }));
+    let formattedModules = [];
 
-    formattedModules.forEach((mdl) => {
-      amount += mdl.amount;
+    // check if the student has modules
+    if (modules.length > 0) {
+      // convert module names to lowercase
+      formattedModules = modules.map((mdl) => ({
+        name: mdl.name,
+        amount: parseInt(mdl.amount),
+      }));
 
-      studentActivity.push({
-        title: "Course Enrollment",
-        value: mdl.name,
-        amount: mdl.amount,
-        ts: Date.now(),
+      formattedModules.forEach((mdl) => {
+        amount += mdl.amount;
+
+        studentActivity.push({
+          title: "Course Enrollment",
+          value: mdl.name,
+          amount: mdl.amount,
+          ts: Date.now(),
+        });
       });
-    });
+    }
 
     let studentData = {
       user: req.userId,
@@ -90,7 +95,7 @@ exports.newStudent = async (req, res, next) => {
 exports.editStudent = async (req, res, next) => {
   const id = req.params.id;
 
-  const { name, email, phone, idNo } = req.body;
+  const { name, email, phone, idNo, status } = req.body;
 
   try {
     const student = await getStudentById(id);
@@ -102,6 +107,7 @@ exports.editStudent = async (req, res, next) => {
       email,
       phone,
       idNo,
+      active: status,
     });
 
     res
