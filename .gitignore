@@ -7,3 +7,6 @@
 *.http
 
 *.pdf
+
+.DS_Store
+

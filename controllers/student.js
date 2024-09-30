@@ -193,7 +193,7 @@ exports.updateFeePayment = async (req, res, next) => {
   try {
     const id = req.params.id;
 
-    const { amount, desc } = req.body;
+    const { amount, desc, printOption } = req.body;
 
     let intAmount = parseInt(amount);
 
@@ -223,30 +223,36 @@ exports.updateFeePayment = async (req, res, next) => {
       amount_paid,
     });
 
-    // print
-    const doc = new PDFDocument({ size: "A5", margin: 30 });
+    if (printOption) {
+      console.log("printing...");
 
-    // set response headers
-    res.setHeader(
-      "content-disposition",
-      `attachment; filename=${student.name.split(" ")[0]}.pdf`
-    );
-    res.type("application/pdf");
+      // print
+      const doc = new PDFDocument({ size: "A5", margin: 30 });
 
-    // doc.pipe(fs.createWriteStream(path.join(__dirname, "receipt.pdf")));
+      // set response headers
+      res.setHeader(
+        "content-disposition",
+        `attachment; filename=${student.name.split(" ")[0]}.pdf`
+      );
+      res.type("application/pdf");
 
-    doc.pipe(res);
+      doc.pipe(res);
 
-    const receiptData = {
-      name: student.name,
-      code: student.code,
-      amount: intAmount,
-      method: desc,
-    };
+      const receiptData = {
+        name: student.name,
+        code: student.code,
+        amount: intAmount,
+        method: desc,
+      };
 
-    createReceipt(doc, receiptData);
+      createReceipt(doc, receiptData);
 
-    doc.end();
+      doc.end();
+    } else {
+      console.log("not printing!");
+
+      res.status(201).json({ message: "fee has been updated" });
+    }
   } catch (err) {
     next(err);
   }
