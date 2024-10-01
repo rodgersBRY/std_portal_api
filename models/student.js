@@ -86,8 +86,9 @@ studentSchema.index({ user: 1 });
 const Student = model("Student", studentSchema);
 
 module.exports = {
-  getStudents: (id) => Student.find({ user: id }),
-  getStudentById: (id) => Student.findById(id),
+  getStudents: (id) => Student.find({ user: id }).sort({ createdAt: -1 }),
+  getStudentById: (id) =>
+    Student.findById(id),
   getStudentByEmailPhone: (email, phone) =>
     Student.findOne({ email: email, phone: phone }),
   addStudent: (values) => new Student(values).save().then((student) => student),
