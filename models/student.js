@@ -17,10 +17,10 @@ const moduleSchema = new Schema(
 
 const studentSchema = new Schema(
   {
-    user: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-    },
+    // user: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: "User",
+    // },
     code: {
       type: String,
       required: true,
@@ -81,17 +81,18 @@ const studentSchema = new Schema(
 
 studentSchema.index({ email: 1 });
 studentSchema.index({ phone: 1 });
+studentSchema.index({ code: 1 });
 studentSchema.index({ user: 1 });
 
 const Student = model("Student", studentSchema);
 
 module.exports = {
-  getStudents: (id) => Student.find({ user: id }).sort({ createdAt: -1 }),
-  getStudentById: (id) =>
-    Student.findById(id),
+  getStudents: () => Student.find().sort({ createdAt: -1 }),
+  getStudentById: (id) => Student.findById(id),
   getStudentByEmailPhone: (email, phone) =>
     Student.findOne({ email: email, phone: phone }),
   addStudent: (values) => new Student(values).save().then((student) => student),
+  insertMany: (bulkData) => Student.insertMany(bulkData),
   editStudentById: (id, values) =>
     Student.findByIdAndUpdate(id, values, { upsert: true, new: true }),
   deleteStudentById: (id) => Student.findByIdAndDelete(id),
