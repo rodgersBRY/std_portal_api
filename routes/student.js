@@ -4,7 +4,7 @@ const app = require("express").Router(),
 
 app
   .route("/")
-  .get(controller.getStudents)
+  .get(authGuard, controller.getStudents)
   .post(authGuard, controller.newStudent);
 
 app
