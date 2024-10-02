@@ -45,3 +45,5 @@ app.use((error, req, res, next) => {
 app.listen(port, () => {
   console.log("Jarvis is up and running: " + port);
 });
+
+module.exports = app;
