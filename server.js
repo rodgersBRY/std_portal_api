@@ -1,49 +1,29 @@
-const express = require("express"),
-  cors = require("cors"),
-  logger = require("morgan");
+const express = require("express");
 
-require("dotenv").config();
+// load env varibales
+const dotenv = require("dotenv");
+dotenv.config();
 
-const dbConnect = require("./services/db_config"),
-  authRoutes = require("./routes/auth"),
-  studentRoutes = require("./routes/student");
+const dbConnect = require("./config/database");
+const expressConfig = require("./config/express");
+const { PORT } = require("./config/env");
+const logger = require("./config/logger");
 
 const app = express();
 
-const port = process.env.PORT || 4000;
+function serve() {
+  // mongo connect
+  dbConnect();
 
-// mongo connect
-dbConnect();
+  // load express configs
+  expressConfig(app);
 
-app
-  .use(logger("dev"))
-  .use(cors())
-  .use(express.json())
-  .use(express.urlencoded({ extended: false }));
-
-// api endpoints
-let resources = [
-  { path: "/api/auth", resource: authRoutes },
-  { path: "/api/students", resource: studentRoutes },
-];
-
-resources.forEach((res) => {
-  app.use(res.path, res.resource);
-});
-
-// error handling middleware
-app.use((error, req, res, next) => {
-  const status = error.statusCode || 500;
-  const message = error.message || "Internal Server Error";
-  const data = error.data;
-  res.status(status).json({
-    message,
-    data,
+  // initialize app
+  app.listen(PORT, () => {
+    logger.info(`app-init port ${PORT}`);
   });
-});
+}
 
-app.listen(port, () => {
-  console.log("Jarvis is up and running: " + port);
-});
+serve();
 
 module.exports = app;
